@@ -1,0 +1,853 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "sample_code.py",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L1",
+      "id": "sample_code_py",
+      "community": 0,
+      "norm_label": "sample_code.py"
+    },
+    {
+      "label": "Document",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L6",
+      "id": "docs_sample_code_document",
+      "community": 4,
+      "norm_label": "document"
+    },
+    {
+      "label": "VectorStore",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L12",
+      "id": "docs_sample_code_vectorstore",
+      "community": 0,
+      "norm_label": "vectorstore"
+    },
+    {
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L15",
+      "id": "docs_sample_code_vectorstore_init",
+      "community": 0,
+      "norm_label": ".__init__()"
+    },
+    {
+      "label": "str",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L15",
+      "id": "str",
+      "community": 6,
+      "norm_label": "str"
+    },
+    {
+      "label": ".upsert()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L18",
+      "id": "docs_sample_code_vectorstore_upsert",
+      "community": 4,
+      "norm_label": ".upsert()"
+    },
+    {
+      "label": "float",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L18",
+      "id": "float",
+      "community": 4,
+      "norm_label": "float"
+    },
+    {
+      "label": ".search()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L21",
+      "id": "docs_sample_code_vectorstore_search",
+      "community": 4,
+      "norm_label": ".search()"
+    },
+    {
+      "label": "int",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L21",
+      "id": "int",
+      "community": 4,
+      "norm_label": "int"
+    },
+    {
+      "label": "GraphStore",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L25",
+      "id": "docs_sample_code_graphstore",
+      "community": 6,
+      "norm_label": "graphstore"
+    },
+    {
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L28",
+      "id": "docs_sample_code_graphstore_init",
+      "community": 6,
+      "norm_label": ".__init__()"
+    },
+    {
+      "label": ".get_neighbors()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L31",
+      "id": "docs_sample_code_graphstore_get_neighbors",
+      "community": 6,
+      "norm_label": ".get_neighbors()"
+    },
+    {
+      "label": "HybridRetriever",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L35",
+      "id": "docs_sample_code_hybridretriever",
+      "community": 0,
+      "norm_label": "hybridretriever"
+    },
+    {
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L38",
+      "id": "docs_sample_code_hybridretriever_init",
+      "community": 0,
+      "norm_label": ".__init__()"
+    },
+    {
+      "label": ".retrieve()",
+      "file_type": "code",
+      "source_file": "sample_code.py",
+      "source_location": "L42",
+      "id": "docs_sample_code_hybridretriever_retrieve",
+      "community": 4,
+      "norm_label": ".retrieve()"
+    },
+    {
+      "label": "Sample Python code \u0111\u1ec3 test AST extraction c\u1ee7a graphify.",
+      "file_type": "rationale",
+      "source_file": "sample_code.py",
+      "source_location": "L1",
+      "id": "docs_sample_code_rationale_1",
+      "community": 0,
+      "norm_label": "sample python code \u0111e test ast extraction cua graphify."
+    },
+    {
+      "label": "L\u01b0u embedding vector v\u1edbi pgvector.",
+      "file_type": "rationale",
+      "source_file": "sample_code.py",
+      "source_location": "L13",
+      "id": "docs_sample_code_rationale_13",
+      "community": 0,
+      "norm_label": "luu embedding vector voi pgvector."
+    },
+    {
+      "label": "Wrapper cho graph.json t\u1eeb graphify.",
+      "file_type": "rationale",
+      "source_file": "sample_code.py",
+      "source_location": "L26",
+      "id": "docs_sample_code_rationale_26",
+      "community": 6,
+      "norm_label": "wrapper cho graph.json tu graphify."
+    },
+    {
+      "label": "K\u1ebft h\u1ee3p vector search + graph traversal.",
+      "file_type": "rationale",
+      "source_file": "sample_code.py",
+      "source_location": "L36",
+      "id": "docs_sample_code_rationale_36",
+      "community": 0,
+      "norm_label": "ket hop vector search + graph traversal."
+    },
+    {
+      "label": "cocoindex_intro.md",
+      "file_type": "document",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L1",
+      "id": "cocoindex_intro_md",
+      "community": 1,
+      "norm_label": "cocoindex_intro.md"
+    },
+    {
+      "label": "Cocoindex Engine Overview",
+      "file_type": "document",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L1",
+      "id": "docs_cocoindex_intro_cocoindex_engine_overview",
+      "community": 1,
+      "norm_label": "cocoindex engine overview"
+    },
+    {
+      "label": "C\u01a1 ch\u1ebf Incremental",
+      "file_type": "document",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L5",
+      "id": "docs_cocoindex_intro_c\u01a1_ch\u1ebf_incremental",
+      "community": 1,
+      "norm_label": "co che incremental"
+    },
+    {
+      "label": "Re-index khi \u0111\u1ed5i embedding model",
+      "file_type": "document",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L10",
+      "id": "docs_cocoindex_intro_re_index_khi_\u0111\u1ed5i_embedding_model",
+      "community": 1,
+      "norm_label": "re-index khi \u0111oi embedding model"
+    },
+    {
+      "label": "Output targets",
+      "file_type": "document",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L16",
+      "id": "docs_cocoindex_intro_output_targets",
+      "community": 1,
+      "norm_label": "output targets"
+    },
+    {
+      "label": "drift_test_doc.md",
+      "file_type": "document",
+      "source_file": "drift_test_doc.md",
+      "source_location": "L1",
+      "id": "drift_test_doc_md",
+      "community": 7,
+      "norm_label": "drift_test_doc.md"
+    },
+    {
+      "label": "Drift Test Document",
+      "file_type": "document",
+      "source_file": "drift_test_doc.md",
+      "source_location": "L1",
+      "id": "docs_drift_test_doc_drift_test_document",
+      "community": 7,
+      "norm_label": "drift test document"
+    },
+    {
+      "label": "N\u1ed9i dung ki\u1ec3m tra",
+      "file_type": "document",
+      "source_file": "drift_test_doc.md",
+      "source_location": "L5",
+      "id": "docs_drift_test_doc_n\u1ed9i_dung_ki\u1ec3m_tra",
+      "community": 7,
+      "norm_label": "noi dung kiem tra"
+    },
+    {
+      "label": "embedding_models.md",
+      "file_type": "document",
+      "source_file": "embedding_models.md",
+      "source_location": "L1",
+      "id": "embedding_models_md",
+      "community": 5,
+      "norm_label": "embedding_models.md"
+    },
+    {
+      "label": "Embedding Models Comparison",
+      "file_type": "document",
+      "source_file": "embedding_models.md",
+      "source_location": "L1",
+      "id": "docs_embedding_models_embedding_models_comparison",
+      "community": 5,
+      "norm_label": "embedding models comparison"
+    },
+    {
+      "label": "B\u1ea3ng so s\u00e1nh model",
+      "file_type": "document",
+      "source_file": "embedding_models.md",
+      "source_location": "L3",
+      "id": "docs_embedding_models_b\u1ea3ng_so_s\u00e1nh_model",
+      "community": 5,
+      "norm_label": "bang so sanh model"
+    },
+    {
+      "label": "Khi n\u00e0o swap model?",
+      "file_type": "document",
+      "source_file": "embedding_models.md",
+      "source_location": "L12",
+      "id": "docs_embedding_models_khi_n\u00e0o_swap_model",
+      "community": 5,
+      "norm_label": "khi nao swap model?"
+    },
+    {
+      "label": "graphify_intro.md",
+      "file_type": "document",
+      "source_file": "graphify_intro.md",
+      "source_location": "L1",
+      "id": "graphify_intro_md",
+      "community": 2,
+      "norm_label": "graphify_intro.md"
+    },
+    {
+      "label": "Graphify Knowledge Graph Builder",
+      "file_type": "document",
+      "source_file": "graphify_intro.md",
+      "source_location": "L1",
+      "id": "docs_graphify_intro_graphify_knowledge_graph_builder",
+      "community": 2,
+      "norm_label": "graphify knowledge graph builder"
+    },
+    {
+      "label": "Pipeline",
+      "file_type": "document",
+      "source_file": "graphify_intro.md",
+      "source_location": "L5",
+      "id": "docs_graphify_intro_pipeline",
+      "community": 2,
+      "norm_label": "pipeline"
+    },
+    {
+      "label": "Confidence Tags",
+      "file_type": "document",
+      "source_file": "graphify_intro.md",
+      "source_location": "L11",
+      "id": "docs_graphify_intro_confidence_tags",
+      "community": 2,
+      "norm_label": "confidence tags"
+    },
+    {
+      "label": "MCP Server",
+      "file_type": "document",
+      "source_file": "graphify_intro.md",
+      "source_location": "L16",
+      "id": "docs_graphify_intro_mcp_server",
+      "community": 2,
+      "norm_label": "mcp server"
+    },
+    {
+      "label": "rag_architecture.md",
+      "file_type": "document",
+      "source_file": "rag_architecture.md",
+      "source_location": "L1",
+      "id": "rag_architecture_md",
+      "community": 3,
+      "norm_label": "rag_architecture.md"
+    },
+    {
+      "label": "RAG Architecture: Strategy B",
+      "file_type": "document",
+      "source_file": "rag_architecture.md",
+      "source_location": "L1",
+      "id": "docs_rag_architecture_rag_architecture_strategy_b",
+      "community": 3,
+      "norm_label": "rag architecture: strategy b"
+    },
+    {
+      "label": "Pipeline 1: Cocoindex \u2192 pgvector",
+      "file_type": "document",
+      "source_file": "rag_architecture.md",
+      "source_location": "L5",
+      "id": "docs_rag_architecture_pipeline_1_cocoindex_pgvector",
+      "community": 3,
+      "norm_label": "pipeline 1: cocoindex \u2192 pgvector"
+    },
+    {
+      "label": "Pipeline 2: Graphify \u2192 graph.json",
+      "file_type": "document",
+      "source_file": "rag_architecture.md",
+      "source_location": "L9",
+      "id": "docs_rag_architecture_pipeline_2_graphify_graph_json",
+      "community": 3,
+      "norm_label": "pipeline 2: graphify \u2192 graph.json"
+    },
+    {
+      "label": "Hybrid Retrieval",
+      "file_type": "document",
+      "source_file": "rag_architecture.md",
+      "source_location": "L13",
+      "id": "docs_rag_architecture_hybrid_retrieval",
+      "community": 3,
+      "norm_label": "hybrid retrieval"
+    }
+  ],
+  "links": [
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_rationale_1",
+      "target": "sample_code_py"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "sample_code_py",
+      "target": "docs_sample_code_document"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "sample_code_py",
+      "target": "docs_sample_code_graphstore"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "sample_code_py",
+      "target": "docs_sample_code_hybridretriever"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "sample_code_py",
+      "target": "docs_sample_code_vectorstore"
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever_retrieve",
+      "target": "docs_sample_code_document"
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore_search",
+      "target": "docs_sample_code_document"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore_upsert",
+      "target": "docs_sample_code_document"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever_init",
+      "target": "docs_sample_code_vectorstore"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_rationale_13",
+      "target": "docs_sample_code_vectorstore"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore",
+      "target": "docs_sample_code_vectorstore_init"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore",
+      "target": "docs_sample_code_vectorstore_search"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore",
+      "target": "docs_sample_code_vectorstore_upsert"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore_init",
+      "target": "str"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_graphstore_get_neighbors",
+      "target": "str"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_graphstore_init",
+      "target": "str"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever_retrieve",
+      "target": "str"
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore_upsert",
+      "target": "float"
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore_search",
+      "target": "float"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_vectorstore_search",
+      "target": "int"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_graphstore_get_neighbors",
+      "target": "int"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever_retrieve",
+      "target": "int"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_graphstore",
+      "target": "docs_sample_code_graphstore_get_neighbors"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_graphstore",
+      "target": "docs_sample_code_graphstore_init"
+    },
+    {
+      "relation": "references",
+      "context": "parameter_type",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever_init",
+      "target": "docs_sample_code_graphstore"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_rationale_26",
+      "target": "docs_sample_code_graphstore"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever",
+      "target": "docs_sample_code_hybridretriever_init"
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L42",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_hybridretriever",
+      "target": "docs_sample_code_hybridretriever_retrieve"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "sample_code.py",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_sample_code_rationale_36",
+      "target": "docs_sample_code_hybridretriever"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "cocoindex_intro_md",
+      "target": "docs_cocoindex_intro_cocoindex_engine_overview"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_cocoindex_intro_cocoindex_engine_overview",
+      "target": "docs_cocoindex_intro_c\u01a1_ch\u1ebf_incremental"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_cocoindex_intro_cocoindex_engine_overview",
+      "target": "docs_cocoindex_intro_output_targets"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "cocoindex_intro.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_cocoindex_intro_cocoindex_engine_overview",
+      "target": "docs_cocoindex_intro_re_index_khi_\u0111\u1ed5i_embedding_model"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "drift_test_doc.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "drift_test_doc_md",
+      "target": "docs_drift_test_doc_drift_test_document",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "drift_test_doc.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "docs_drift_test_doc_drift_test_document",
+      "target": "docs_drift_test_doc_n\u1ed9i_dung_ki\u1ec3m_tra",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "embedding_models.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "embedding_models_md",
+      "target": "docs_embedding_models_embedding_models_comparison"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "embedding_models.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_embedding_models_embedding_models_comparison",
+      "target": "docs_embedding_models_b\u1ea3ng_so_s\u00e1nh_model"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "embedding_models.md",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_embedding_models_embedding_models_comparison",
+      "target": "docs_embedding_models_khi_n\u00e0o_swap_model"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify_intro.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "graphify_intro_md",
+      "target": "docs_graphify_intro_graphify_knowledge_graph_builder"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify_intro.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_graphify_intro_graphify_knowledge_graph_builder",
+      "target": "docs_graphify_intro_confidence_tags"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify_intro.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_graphify_intro_graphify_knowledge_graph_builder",
+      "target": "docs_graphify_intro_mcp_server"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "graphify_intro.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_graphify_intro_graphify_knowledge_graph_builder",
+      "target": "docs_graphify_intro_pipeline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rag_architecture.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "rag_architecture_md",
+      "target": "docs_rag_architecture_rag_architecture_strategy_b"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rag_architecture.md",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_rag_architecture_rag_architecture_strategy_b",
+      "target": "docs_rag_architecture_hybrid_retrieval"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rag_architecture.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_rag_architecture_rag_architecture_strategy_b",
+      "target": "docs_rag_architecture_pipeline_1_cocoindex_pgvector"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "rag_architecture.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_rag_architecture_rag_architecture_strategy_b",
+      "target": "docs_rag_architecture_pipeline_2_graphify_graph_json"
+    }
+  ],
+  "hyperedges": []
+}

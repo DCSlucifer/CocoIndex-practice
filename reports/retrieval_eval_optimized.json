@@ -1,0 +1,203 @@
+{
+  "url": "http://127.0.0.1:8003/query",
+  "summary": {
+    "cases": 5,
+    "vector_source_recall": 1.0,
+    "graph_evidence_recall": 1.0,
+    "confidence_tag_recall": 1.0,
+    "avg_vector_only_score": 1,
+    "avg_hybrid_score": 3,
+    "p50_latency_ms": 807.8719999994064,
+    "max_latency_ms": 913.5178000005908
+  },
+  "results": [
+    {
+      "id": "reindex_model_change",
+      "question": "How does the system reindex when embedding model changes?",
+      "latency_ms": 751.5606999995725,
+      "vector_ok": true,
+      "graph_ok": true,
+      "confidence_ok": true,
+      "vector_only_score": 1,
+      "hybrid_score": 3,
+      "vector_sources": [
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_paper_intro.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\embedding_models.md",
+        "D:\\Rag vsf\\data\\docs\\cocoindex_intro.md"
+      ],
+      "graph_labels": [
+        "Re-index khi đổi embedding model",
+        "Cocoindex Engine Overview",
+        "Bảng so sánh model",
+        "Embedding Models Comparison",
+        "Khi nào swap model?",
+        "Lưu embedding vector với pgvector.",
+        "VectorStore",
+        "embedding_models.md",
+        "Pipeline 1: Cocoindex → pgvector",
+        "RAG Architecture: Strategy B"
+      ],
+      "graph_confidences": [
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED"
+      ]
+    },
+    {
+      "id": "graphify_confidence",
+      "question": "What confidence tags does graphify use on edges?",
+      "latency_ms": 875.9632000001147,
+      "vector_ok": true,
+      "graph_ok": true,
+      "confidence_ok": true,
+      "vector_only_score": 1,
+      "hybrid_score": 3,
+      "vector_sources": [
+        "D:\\Rag vsf\\data\\docs\\graphify_intro.md",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_paper_intro.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_architecture.md"
+      ],
+      "graph_labels": [
+        "Confidence Tags",
+        "Graphify Knowledge Graph Builder",
+        "Pipeline 2: Graphify → graph.json",
+        "RAG Architecture: Strategy B",
+        "Wrapper cho graph.json từ graphify.",
+        "GraphStore",
+        "graphify_intro.md",
+        "MCP Server",
+        "Pipeline",
+        "Sample Python code để test AST extraction của graphify.",
+        "sample_code.py"
+      ],
+      "graph_confidences": [
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED"
+      ]
+    },
+    {
+      "id": "hybrid_code_path",
+      "question": "What does HybridRetriever connect between VectorStore and GraphStore?",
+      "latency_ms": 676.6368999997212,
+      "vector_ok": true,
+      "graph_ok": true,
+      "confidence_ok": true,
+      "vector_only_score": 1,
+      "hybrid_score": 3,
+      "vector_sources": [
+        "D:\\Rag vsf\\data\\docs\\sample_code.py",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_paper_intro.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_architecture.md",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf"
+      ],
+      "graph_labels": [
+        ".get_neighbors()",
+        "str",
+        "int",
+        "GraphStore",
+        "Kết hợp vector search + graph traversal.",
+        "HybridRetriever",
+        "Wrapper cho graph.json từ graphify.",
+        "sample_code.py",
+        ".__init__()",
+        ".__init__()"
+      ],
+      "graph_confidences": [
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED"
+      ]
+    },
+    {
+      "id": "incremental_processing",
+      "question": "Explain cocoindex incremental processing for RAG freshness",
+      "latency_ms": 913.5178000005908,
+      "vector_ok": true,
+      "graph_ok": true,
+      "confidence_ok": true,
+      "vector_only_score": 1,
+      "hybrid_score": 3,
+      "vector_sources": [
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_paper_intro.pdf",
+        "D:\\Rag vsf\\data\\docs\\cocoindex_intro.md",
+        "D:\\Rag vsf\\data\\docs\\rag_architecture.md",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf"
+      ],
+      "graph_labels": [
+        "Pipeline 1: Cocoindex → pgvector",
+        "RAG Architecture: Strategy B",
+        "Cơ chế Incremental",
+        "Cocoindex Engine Overview",
+        "Re-index khi đổi embedding model",
+        "Pipeline 2: Graphify → graph.json",
+        "cocoindex_intro.md",
+        "Output targets",
+        "Hybrid Retrieval",
+        "rag_architecture.md"
+      ],
+      "graph_confidences": [
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED"
+      ]
+    },
+    {
+      "id": "strategy_b",
+      "question": "Why use Strategy B with two parallel pipelines?",
+      "latency_ms": 807.8719999994064,
+      "vector_ok": true,
+      "graph_ok": true,
+      "confidence_ok": true,
+      "vector_only_score": 1,
+      "hybrid_score": 3,
+      "vector_sources": [
+        "D:\\Rag vsf\\data\\docs\\rag_architecture.md",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+        "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf"
+      ],
+      "graph_labels": [
+        "RAG Architecture: Strategy B",
+        "rag_architecture.md",
+        "Hybrid Retrieval",
+        "Pipeline 1: Cocoindex → pgvector",
+        "Pipeline 2: Graphify → graph.json",
+        "Wrapper cho graph.json từ graphify.",
+        "GraphStore",
+        "Kết hợp vector search + graph traversal.",
+        "HybridRetriever",
+        "Re-index khi đổi embedding model",
+        "Cocoindex Engine Overview"
+      ],
+      "graph_confidences": [
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED",
+        "EXTRACTED"
+      ]
+    }
+  ]
+}

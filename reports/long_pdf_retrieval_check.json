@@ -1,0 +1,114 @@
+{
+  "url": "http://127.0.0.1:8003/query",
+  "indexed_file": "D:\\Rag vsf\\data\\docs\\rag_long_whitepaper.pdf",
+  "db_evidence": {
+    "total_chunks": 15,
+    "total_docs": 8,
+    "long_pdf_chunks": 6,
+    "distinct_chunk_hashes": 15,
+    "duplicate_chunk_rows": 0,
+    "chunks_with_section_title": 11,
+    "chunks_with_page_number": 15,
+    "file_types": [
+      ".md",
+      ".pdf",
+      ".py"
+    ],
+    "embedding_model": "openai:text-embedding-3-large:3072",
+    "embedding_dimensions": 3072
+  },
+  "checks": [
+    {
+      "question": "What does the long whitepaper say about shadow index or shadow column for embedding migration?",
+      "evidence_marker": "Embedding Model Migration",
+      "top_sources": [
+        "rag_long_whitepaper.pdf",
+        "rag_long_whitepaper.pdf",
+        "cocoindex_intro.md",
+        "embedding_models.md",
+        "rag_paper_intro.pdf"
+      ],
+      "top_vector_scores": [
+        0.515,
+        0.479,
+        0.389,
+        0.3,
+        0.379
+      ],
+      "top_rerank_scores": [
+        0.745,
+        0.509,
+        0.449,
+        0.4,
+        0.389
+      ],
+      "top_sections": [
+        "3. Embedding Model Migration",
+        "1. Problem Statement",
+        "Cocoindex Engine Overview",
+        "Embedding Models Comparison",
+        null
+      ],
+      "top_pages": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "best_vector_score": 0.515,
+      "best_rerank_score": 0.745,
+      "evidence_rank": 1,
+      "evidence_vector_score": 0.515,
+      "evidence_rerank_score": 0.745,
+      "top1_snippet": "Section: 3. Embedding Model Migration 3. Embedding Model Migration A same-dimension embedding model can be swapped with an in-place reindex. A different dimension model should use ...",
+      "evidence_snippet": "Section: 3. Embedding Model Migration 3. Embedding Model Migration A same-dimension embedding model can be swapped with an in-place reindex. A different dimension model should use ..."
+    },
+    {
+      "question": "What scaling considerations are described in the long-form RAG whitepaper?",
+      "evidence_marker": "Scaling Considerations",
+      "top_sources": [
+        "rag_long_whitepaper.pdf",
+        "rag_long_whitepaper.pdf",
+        "rag_architecture.md",
+        "rag_long_whitepaper.pdf",
+        "rag_paper_intro.pdf"
+      ],
+      "top_vector_scores": [
+        0.525,
+        0.507,
+        0.364,
+        0.355,
+        0.333
+      ],
+      "top_rerank_scores": [
+        0.725,
+        0.557,
+        0.434,
+        0.355,
+        0.343
+      ],
+      "top_sections": [
+        "7. Scaling Considerations",
+        "1. Problem Statement",
+        "RAG Architecture: Strategy B",
+        "11. Evaluation Strategy",
+        null
+      ],
+      "top_pages": [
+        2,
+        1,
+        1,
+        3,
+        1
+      ],
+      "best_vector_score": 0.525,
+      "best_rerank_score": 0.725,
+      "evidence_rank": 1,
+      "evidence_vector_score": 0.525,
+      "evidence_rerank_score": 0.725,
+      "top1_snippet": "Section: 7. Scaling Considerations 7. Scaling Considerations The local single-process API is useful for a POC but insufficient for high CCU. Production needs multiple API replicas,...",
+      "evidence_snippet": "Section: 7. Scaling Considerations 7. Scaling Considerations The local single-process API is useful for a POC but insufficient for high CCU. Production needs multiple API replicas,..."
+    }
+  ]
+}

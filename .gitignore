@@ -1,0 +1,93 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python caches and test artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+
+# Build and packaging outputs
+build/
+dist/
+site/
+*.egg-info/
+*.egg
+*.whl
+
+# CocoIndex and local indexing state
+.cocoindex/
+
+# Local Graphify output outside the committed demo corpus
+/graphify-out/
+
+# Local upstream/source checkouts used only for research
+/cocoindex/
+
+# Local agent plans/specs generated during workflow
+docs/superpowers/
+
+# Runtime logs and process output
+*.log
+*.out
+*.err
+*.pid
+*.seed
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+.temp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+~$*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.code-workspace
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node and frontend tooling caches
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.turbo/
+.next/
+out/
+
+# Rust build output
+target/
+
+# Keep the demo corpus and generated graph evidence versionable.
+!data/
+!data/**

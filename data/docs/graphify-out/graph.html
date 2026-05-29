@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>graphify - data\docs\graphify-out\graph.html</title>
+<script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"
+        integrity="sha384-Ux6phic9PEHJ38YtrijhkzyJ8yQlH8i/+buBR8s3mAZOJrP1gwyvAcIYl3GWtpX1"
+        crossorigin="anonymous"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  #graph { flex: 1; }
+  #sidebar { width: 280px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow: hidden; }
+  #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
+  #search { width: 100%; background: #0f0f1a; border: 1px solid #3a3a5e; color: #e0e0e0; padding: 7px 10px; border-radius: 6px; font-size: 13px; outline: none; }
+  #search:focus { border-color: #4E79A7; }
+  #search-results { max-height: 140px; overflow-y: auto; padding: 4px 12px; border-bottom: 1px solid #2a2a4e; display: none; }
+  .search-item { padding: 4px 6px; cursor: pointer; border-radius: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-item:hover { background: #2a2a4e; }
+  #info-panel { padding: 14px; border-bottom: 1px solid #2a2a4e; min-height: 140px; }
+  #info-panel h3 { font-size: 13px; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  #info-content { font-size: 13px; color: #ccc; line-height: 1.6; }
+  #info-content .field { margin-bottom: 5px; }
+  #info-content .field b { color: #e0e0e0; }
+  #info-content .empty { color: #555; font-style: italic; }
+  .neighbor-link { display: block; padding: 2px 6px; margin: 2px 0; border-radius: 3px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid #333; }
+  .neighbor-link:hover { background: #2a2a4e; }
+  #neighbors-list { max-height: 160px; overflow-y: auto; margin-top: 4px; }
+  #legend-wrap { flex: 1; overflow-y: auto; padding: 12px; }
+  #legend-wrap h3 { font-size: 13px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .legend-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; border-radius: 4px; font-size: 12px; }
+  .legend-item:hover { background: #2a2a4e; padding-left: 4px; }
+  .legend-item.dimmed { opacity: 0.35; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legend-count { color: #666; font-size: 11px; }
+  #stats { padding: 10px 14px; border-top: 1px solid #2a2a4e; font-size: 11px; color: #555; }
+  #legend-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 4px 0; }
+  #legend-controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: #aaa; user-select: none; }
+  #legend-controls label:hover { color: #e0e0e0; }
+  .legend-cb, #select-all-cb { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border: 1.5px solid #3a3a5e; border-radius: 3px; background: #0f0f1a; cursor: pointer; position: relative; flex-shrink: 0; }
+  .legend-cb:checked, #select-all-cb:checked { background: #4E79A7; border-color: #4E79A7; }
+  .legend-cb:checked::after, #select-all-cb:checked::after { content: ''; position: absolute; left: 3.5px; top: 1px; width: 4px; height: 7px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  #select-all-cb:indeterminate { background: #4E79A7; border-color: #4E79A7; }
+  #select-all-cb:indeterminate::after { content: ''; position: absolute; left: 2px; top: 5px; width: 8px; height: 2px; background: #fff; border: none; transform: none; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<div id="sidebar">
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search nodes..." autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+  <div id="info-panel">
+    <h3>Node Info</h3>
+    <div id="info-content"><span class="empty">Click a node to inspect it</span></div>
+  </div>
+  <div id="legend-wrap">
+    <h3>Communities</h3>
+    <div id="legend-controls">
+      <label><input type="checkbox" id="select-all-cb" checked onchange="toggleAllCommunities(!this.checked)">Select All</label>
+    </div>
+    <div id="legend"></div>
+  </div>
+  <div id="stats">41 nodes &middot; 46 edges &middot; 8 communities</div>
+</div>
+<script>
+const RAW_NODES = [{"id": "sample_code_py", "label": "sample_code.py", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 35.0, "font": {"size": 12, "color": "#ffffff"}, "title": "sample_code.py", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "code", "degree": 5}, {"id": "docs_sample_code_document", "label": "Document", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Document", "community": 4, "community_name": "Community 4", "source_file": "sample_code.py", "file_type": "code", "degree": 4}, {"id": "docs_sample_code_vectorstore", "label": "VectorStore", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 40.0, "font": {"size": 12, "color": "#ffffff"}, "title": "VectorStore", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "code", "degree": 6}, {"id": "docs_sample_code_vectorstore_init", "label": ".__init__()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".__init__()", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "code", "degree": 2}, {"id": "str", "label": "str", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "str", "community": 6, "community_name": "Community 6", "source_file": "sample_code.py", "file_type": "code", "degree": 4}, {"id": "docs_sample_code_vectorstore_upsert", "label": ".upsert()", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".upsert()", "community": 4, "community_name": "Community 4", "source_file": "sample_code.py", "file_type": "code", "degree": 3}, {"id": "float", "label": "float", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "float", "community": 4, "community_name": "Community 4", "source_file": "sample_code.py", "file_type": "code", "degree": 2}, {"id": "docs_sample_code_vectorstore_search", "label": ".search()", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".search()", "community": 4, "community_name": "Community 4", "source_file": "sample_code.py", "file_type": "code", "degree": 4}, {"id": "int", "label": "int", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "int", "community": 4, "community_name": "Community 4", "source_file": "sample_code.py", "file_type": "code", "degree": 3}, {"id": "docs_sample_code_graphstore", "label": "GraphStore", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 35.0, "font": {"size": 12, "color": "#ffffff"}, "title": "GraphStore", "community": 6, "community_name": "Community 6", "source_file": "sample_code.py", "file_type": "code", "degree": 5}, {"id": "docs_sample_code_graphstore_init", "label": ".__init__()", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".__init__()", "community": 6, "community_name": "Community 6", "source_file": "sample_code.py", "file_type": "code", "degree": 2}, {"id": "docs_sample_code_graphstore_get_neighbors", "label": ".get_neighbors()", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".get_neighbors()", "community": 6, "community_name": "Community 6", "source_file": "sample_code.py", "file_type": "code", "degree": 3}, {"id": "docs_sample_code_hybridretriever", "label": "HybridRetriever", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "HybridRetriever", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "code", "degree": 4}, {"id": "docs_sample_code_hybridretriever_init", "label": ".__init__()", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".__init__()", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "code", "degree": 3}, {"id": "docs_sample_code_hybridretriever_retrieve", "label": ".retrieve()", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": ".retrieve()", "community": 4, "community_name": "Community 4", "source_file": "sample_code.py", "file_type": "code", "degree": 4}, {"id": "docs_sample_code_rationale_1", "label": "Sample Python code \u0111\u1ec3 test AST extraction c\u1ee7a graphify.", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Sample Python code \u0111\u1ec3 test AST extraction c\u1ee7a graphify.", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "rationale", "degree": 1}, {"id": "docs_sample_code_rationale_13", "label": "L\u01b0u embedding vector v\u1edbi pgvector.", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "L\u01b0u embedding vector v\u1edbi pgvector.", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "rationale", "degree": 1}, {"id": "docs_sample_code_rationale_26", "label": "Wrapper cho graph.json t\u1eeb graphify.", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Wrapper cho graph.json t\u1eeb graphify.", "community": 6, "community_name": "Community 6", "source_file": "sample_code.py", "file_type": "rationale", "degree": 1}, {"id": "docs_sample_code_rationale_36", "label": "K\u1ebft h\u1ee3p vector search + graph traversal.", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "K\u1ebft h\u1ee3p vector search + graph traversal.", "community": 0, "community_name": "Community 0", "source_file": "sample_code.py", "file_type": "rationale", "degree": 1}, {"id": "cocoindex_intro_md", "label": "cocoindex_intro.md", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "cocoindex_intro.md", "community": 1, "community_name": "Community 1", "source_file": "cocoindex_intro.md", "file_type": "document", "degree": 1}, {"id": "docs_cocoindex_intro_cocoindex_engine_overview", "label": "Cocoindex Engine Overview", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Cocoindex Engine Overview", "community": 1, "community_name": "Community 1", "source_file": "cocoindex_intro.md", "file_type": "document", "degree": 4}, {"id": "docs_cocoindex_intro_c\u01a1_ch\u1ebf_incremental", "label": "C\u01a1 ch\u1ebf Incremental", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "C\u01a1 ch\u1ebf Incremental", "community": 1, "community_name": "Community 1", "source_file": "cocoindex_intro.md", "file_type": "document", "degree": 1}, {"id": "docs_cocoindex_intro_re_index_khi_\u0111\u1ed5i_embedding_model", "label": "Re-index khi \u0111\u1ed5i embedding model", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Re-index khi \u0111\u1ed5i embedding model", "community": 1, "community_name": "Community 1", "source_file": "cocoindex_intro.md", "file_type": "document", "degree": 1}, {"id": "docs_cocoindex_intro_output_targets", "label": "Output targets", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Output targets", "community": 1, "community_name": "Community 1", "source_file": "cocoindex_intro.md", "file_type": "document", "degree": 1}, {"id": "drift_test_doc_md", "label": "drift_test_doc.md", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "drift_test_doc.md", "community": 7, "community_name": "Community 7", "source_file": "drift_test_doc.md", "file_type": "document", "degree": 1}, {"id": "docs_drift_test_doc_drift_test_document", "label": "Drift Test Document", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 20.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Drift Test Document", "community": 7, "community_name": "Community 7", "source_file": "drift_test_doc.md", "file_type": "document", "degree": 2}, {"id": "docs_drift_test_doc_n\u1ed9i_dung_ki\u1ec3m_tra", "label": "N\u1ed9i dung ki\u1ec3m tra", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "N\u1ed9i dung ki\u1ec3m tra", "community": 7, "community_name": "Community 7", "source_file": "drift_test_doc.md", "file_type": "document", "degree": 1}, {"id": "embedding_models_md", "label": "embedding_models.md", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "embedding_models.md", "community": 5, "community_name": "Community 5", "source_file": "embedding_models.md", "file_type": "document", "degree": 1}, {"id": "docs_embedding_models_embedding_models_comparison", "label": "Embedding Models Comparison", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Embedding Models Comparison", "community": 5, "community_name": "Community 5", "source_file": "embedding_models.md", "file_type": "document", "degree": 3}, {"id": "docs_embedding_models_b\u1ea3ng_so_s\u00e1nh_model", "label": "B\u1ea3ng so s\u00e1nh model", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "B\u1ea3ng so s\u00e1nh model", "community": 5, "community_name": "Community 5", "source_file": "embedding_models.md", "file_type": "document", "degree": 1}, {"id": "docs_embedding_models_khi_n\u00e0o_swap_model", "label": "Khi n\u00e0o swap model?", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Khi n\u00e0o swap model?", "community": 5, "community_name": "Community 5", "source_file": "embedding_models.md", "file_type": "document", "degree": 1}, {"id": "graphify_intro_md", "label": "graphify_intro.md", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "graphify_intro.md", "community": 2, "community_name": "Community 2", "source_file": "graphify_intro.md", "file_type": "document", "degree": 1}, {"id": "docs_graphify_intro_graphify_knowledge_graph_builder", "label": "Graphify Knowledge Graph Builder", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Graphify Knowledge Graph Builder", "community": 2, "community_name": "Community 2", "source_file": "graphify_intro.md", "file_type": "document", "degree": 4}, {"id": "docs_graphify_intro_pipeline", "label": "Pipeline", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Pipeline", "community": 2, "community_name": "Community 2", "source_file": "graphify_intro.md", "file_type": "document", "degree": 1}, {"id": "docs_graphify_intro_confidence_tags", "label": "Confidence Tags", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Confidence Tags", "community": 2, "community_name": "Community 2", "source_file": "graphify_intro.md", "file_type": "document", "degree": 1}, {"id": "docs_graphify_intro_mcp_server", "label": "MCP Server", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "MCP Server", "community": 2, "community_name": "Community 2", "source_file": "graphify_intro.md", "file_type": "document", "degree": 1}, {"id": "rag_architecture_md", "label": "rag_architecture.md", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "rag_architecture.md", "community": 3, "community_name": "Community 3", "source_file": "rag_architecture.md", "file_type": "document", "degree": 1}, {"id": "docs_rag_architecture_rag_architecture_strategy_b", "label": "RAG Architecture: Strategy B", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 30.0, "font": {"size": 12, "color": "#ffffff"}, "title": "RAG Architecture: Strategy B", "community": 3, "community_name": "Community 3", "source_file": "rag_architecture.md", "file_type": "document", "degree": 4}, {"id": "docs_rag_architecture_pipeline_1_cocoindex_pgvector", "label": "Pipeline 1: Cocoindex \u2192 pgvector", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Pipeline 1: Cocoindex \u2192 pgvector", "community": 3, "community_name": "Community 3", "source_file": "rag_architecture.md", "file_type": "document", "degree": 1}, {"id": "docs_rag_architecture_pipeline_2_graphify_graph_json", "label": "Pipeline 2: Graphify \u2192 graph.json", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Pipeline 2: Graphify \u2192 graph.json", "community": 3, "community_name": "Community 3", "source_file": "rag_architecture.md", "file_type": "document", "degree": 1}, {"id": "docs_rag_architecture_hybrid_retrieval", "label": "Hybrid Retrieval", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Hybrid Retrieval", "community": 3, "community_name": "Community 3", "source_file": "rag_architecture.md", "file_type": "document", "degree": 1}];
+const RAW_EDGES = [{"from": "docs_sample_code_rationale_1", "to": "sample_code_py", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "sample_code_py", "to": "docs_sample_code_document", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "sample_code_py", "to": "docs_sample_code_graphstore", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "sample_code_py", "to": "docs_sample_code_hybridretriever", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "sample_code_py", "to": "docs_sample_code_vectorstore", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever_retrieve", "to": "docs_sample_code_document", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore_search", "to": "docs_sample_code_document", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore_upsert", "to": "docs_sample_code_document", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever_init", "to": "docs_sample_code_vectorstore", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_rationale_13", "to": "docs_sample_code_vectorstore", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore", "to": "docs_sample_code_vectorstore_init", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore", "to": "docs_sample_code_vectorstore_search", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore", "to": "docs_sample_code_vectorstore_upsert", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore_init", "to": "str", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_graphstore_get_neighbors", "to": "str", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_graphstore_init", "to": "str", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever_retrieve", "to": "str", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore_upsert", "to": "float", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore_search", "to": "float", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_vectorstore_search", "to": "int", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_graphstore_get_neighbors", "to": "int", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever_retrieve", "to": "int", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_graphstore", "to": "docs_sample_code_graphstore_get_neighbors", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_graphstore", "to": "docs_sample_code_graphstore_init", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever_init", "to": "docs_sample_code_graphstore", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_rationale_26", "to": "docs_sample_code_graphstore", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever", "to": "docs_sample_code_hybridretriever_init", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_hybridretriever", "to": "docs_sample_code_hybridretriever_retrieve", "label": "method", "title": "method [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_sample_code_rationale_36", "to": "docs_sample_code_hybridretriever", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "cocoindex_intro_md", "to": "docs_cocoindex_intro_cocoindex_engine_overview", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_cocoindex_intro_cocoindex_engine_overview", "to": "docs_cocoindex_intro_c\u01a1_ch\u1ebf_incremental", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_cocoindex_intro_cocoindex_engine_overview", "to": "docs_cocoindex_intro_output_targets", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_cocoindex_intro_cocoindex_engine_overview", "to": "docs_cocoindex_intro_re_index_khi_\u0111\u1ed5i_embedding_model", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "drift_test_doc_md", "to": "docs_drift_test_doc_drift_test_document", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_drift_test_doc_drift_test_document", "to": "docs_drift_test_doc_n\u1ed9i_dung_ki\u1ec3m_tra", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "embedding_models_md", "to": "docs_embedding_models_embedding_models_comparison", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_embedding_models_embedding_models_comparison", "to": "docs_embedding_models_b\u1ea3ng_so_s\u00e1nh_model", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_embedding_models_embedding_models_comparison", "to": "docs_embedding_models_khi_n\u00e0o_swap_model", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "graphify_intro_md", "to": "docs_graphify_intro_graphify_knowledge_graph_builder", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_graphify_intro_graphify_knowledge_graph_builder", "to": "docs_graphify_intro_confidence_tags", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_graphify_intro_graphify_knowledge_graph_builder", "to": "docs_graphify_intro_mcp_server", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_graphify_intro_graphify_knowledge_graph_builder", "to": "docs_graphify_intro_pipeline", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "rag_architecture_md", "to": "docs_rag_architecture_rag_architecture_strategy_b", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_rag_architecture_rag_architecture_strategy_b", "to": "docs_rag_architecture_hybrid_retrieval", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_rag_architecture_rag_architecture_strategy_b", "to": "docs_rag_architecture_pipeline_1_cocoindex_pgvector", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_rag_architecture_rag_architecture_strategy_b", "to": "docs_rag_architecture_pipeline_2_graphify_graph_json", "label": "contains", "title": "contains [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}];
+const LEGEND = [{"cid": 0, "color": "#4E79A7", "label": "Community 0", "count": 8}, {"cid": 1, "color": "#F28E2B", "label": "Community 1", "count": 5}, {"cid": 2, "color": "#E15759", "label": "Community 2", "count": 5}, {"cid": 3, "color": "#76B7B2", "label": "Community 3", "count": 5}, {"cid": 4, "color": "#59A14F", "label": "Community 4", "count": 6}, {"cid": 5, "color": "#EDC948", "label": "Community 5", "count": 4}, {"cid": 6, "color": "#B07AA1", "label": "Community 6", "count": 5}, {"cid": 7, "color": "#FF9DA7", "label": "Community 7", "count": 3}];
+
+// HTML-escape helper — prevents XSS when injecting graph data into innerHTML
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Build vis datasets
+const nodesDS = new vis.DataSet(RAW_NODES.map(n => ({
+  id: n.id, label: n.label, color: n.color, size: n.size,
+  font: n.font, title: n.title,
+  _community: n.community, _community_name: n.community_name,
+  _source_file: n.source_file, _file_type: n.file_type, _degree: n.degree,
+})));
+
+const edgesDS = new vis.DataSet(RAW_EDGES.map((e, i) => ({
+  id: i, from: e.from, to: e.to,
+  label: '',
+  title: e.title,
+  dashes: e.dashes,
+  width: e.width,
+  color: e.color,
+  arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+})));
+
+const container = document.getElementById('graph');
+const network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
+  physics: {
+    enabled: true,
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
+      gravitationalConstant: -60,
+      centralGravity: 0.005,
+      springLength: 120,
+      springConstant: 0.08,
+      damping: 0.4,
+      avoidOverlap: 0.8,
+    },
+    stabilization: { iterations: 200, fit: true },
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 100,
+    hideEdgesOnDrag: true,
+    navigationButtons: false,
+    keyboard: false,
+  },
+  nodes: { shape: 'dot', borderWidth: 1.5 },
+  edges: { smooth: { type: 'continuous', roundness: 0.2 }, selectionWidth: 3 },
+});
+
+network.once('stabilizationIterationsDone', () => {
+  network.setOptions({ physics: { enabled: false } });
+});
+
+function showInfo(nodeId) {
+  const n = nodesDS.get(nodeId);
+  if (!n) return;
+  const neighborIds = network.getConnectedNodes(nodeId);
+  const neighborItems = neighborIds.map(nid => {
+    const nb = nodesDS.get(nid);
+    const color = nb ? nb.color.background : '#555';
+    return `<span class="neighbor-link" style="border-left-color:${esc(color)}" onclick="focusNode(${JSON.stringify(nid)})">${esc(nb ? nb.label : nid)}</span>`;
+  }).join('');
+  document.getElementById('info-content').innerHTML = `
+    <div class="field"><b>${esc(n.label)}</b></div>
+    <div class="field">Type: ${esc(n._file_type || 'unknown')}</div>
+    <div class="field">Community: ${esc(n._community_name)}</div>
+    <div class="field">Source: ${esc(n._source_file || '-')}</div>
+    <div class="field">Degree: ${n._degree}</div>
+    ${neighborIds.length ? `<div class="field" style="margin-top:8px;color:#aaa;font-size:11px">Neighbors (${neighborIds.length})</div><div id="neighbors-list">${neighborItems}</div>` : ''}
+  `;
+}
+
+function focusNode(nodeId) {
+  network.focus(nodeId, { scale: 1.4, animation: true });
+  network.selectNodes([nodeId]);
+  showInfo(nodeId);
+}
+
+// Track hovered node — hover detection is more reliable than click params
+let hoveredNodeId = null;
+network.on('hoverNode', params => {
+  hoveredNodeId = params.node;
+  container.style.cursor = 'pointer';
+});
+network.on('blurNode', () => {
+  hoveredNodeId = null;
+  container.style.cursor = 'default';
+});
+container.addEventListener('click', () => {
+  if (hoveredNodeId !== null) {
+    showInfo(hoveredNodeId);
+    network.selectNodes([hoveredNodeId]);
+  }
+});
+network.on('click', params => {
+  if (params.nodes.length > 0) {
+    showInfo(params.nodes[0]);
+  } else if (hoveredNodeId === null) {
+    document.getElementById('info-content').innerHTML = '<span class="empty">Click a node to inspect it</span>';
+  }
+});
+
+const searchInput = document.getElementById('search');
+const searchResults = document.getElementById('search-results');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  searchResults.innerHTML = '';
+  if (!q) { searchResults.style.display = 'none'; return; }
+  const matches = RAW_NODES.filter(n => n.label.toLowerCase().includes(q)).slice(0, 20);
+  if (!matches.length) { searchResults.style.display = 'none'; return; }
+  searchResults.style.display = 'block';
+  matches.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'search-item';
+    el.textContent = n.label;
+    el.style.borderLeft = `3px solid ${n.color.background}`;
+    el.style.paddingLeft = '8px';
+    el.onclick = () => {
+      network.focus(n.id, { scale: 1.5, animation: true });
+      network.selectNodes([n.id]);
+      showInfo(n.id);
+      searchResults.style.display = 'none';
+      searchInput.value = '';
+    };
+    searchResults.appendChild(el);
+  });
+});
+document.addEventListener('click', e => {
+  if (!searchResults.contains(e.target) && e.target !== searchInput)
+    searchResults.style.display = 'none';
+});
+
+const hiddenCommunities = new Set();
+
+const selectAllCb = document.getElementById('select-all-cb');
+
+function updateSelectAllState() {
+  const total = LEGEND.length;
+  const hidden = hiddenCommunities.size;
+  selectAllCb.checked = hidden === 0;
+  selectAllCb.indeterminate = hidden > 0 && hidden < total;
+}
+
+function toggleAllCommunities(hide) {
+  document.querySelectorAll('.legend-item').forEach(item => {
+    hide ? item.classList.add('dimmed') : item.classList.remove('dimmed');
+  });
+  document.querySelectorAll('.legend-cb').forEach(cb => {
+    cb.checked = !hide;
+  });
+  LEGEND.forEach(c => {
+    if (hide) hiddenCommunities.add(c.cid); else hiddenCommunities.delete(c.cid);
+  });
+  const updates = RAW_NODES.map(n => ({ id: n.id, hidden: hide }));
+  nodesDS.update(updates);
+  updateSelectAllState();
+}
+
+const legendEl = document.getElementById('legend');
+LEGEND.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.className = 'legend-cb';
+  cb.checked = true;
+  cb.addEventListener('change', (e) => {
+    e.stopPropagation();
+    if (cb.checked) {
+      hiddenCommunities.delete(c.cid);
+      item.classList.remove('dimmed');
+    } else {
+      hiddenCommunities.add(c.cid);
+      item.classList.add('dimmed');
+    }
+    const updates = RAW_NODES
+      .filter(n => n.community === c.cid)
+      .map(n => ({ id: n.id, hidden: !cb.checked }));
+    nodesDS.update(updates);
+    updateSelectAllState();
+  });
+  item.innerHTML = `<div class="legend-dot" style="background:${c.color}"></div>
+    <span class="legend-label">${c.label}</span>
+    <span class="legend-count">${c.count}</span>`;
+  item.prepend(cb);
+  item.onclick = (e) => {
+    if (e.target === cb) return;
+    cb.checked = !cb.checked;
+    cb.dispatchEvent(new Event('change'));
+  };
+  legendEl.appendChild(item);
+});
+</script>
+<script>
+// Render hyperedges as shaded regions
+const hyperedges = [];
+// afterDrawing passes ctx already transformed to network coordinate space.
+// Draw node positions raw — no manual pan/zoom/DPR math needed.
+network.on('afterDrawing', function(ctx) {
+    hyperedges.forEach(h => {
+        const positions = h.nodes
+            .map(nid => network.getPositions([nid])[nid])
+            .filter(p => p !== undefined);
+        if (positions.length < 2) return;
+        ctx.save();
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = '#6366f1';
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        // Centroid and expanded hull in network coordinates
+        const cx = positions.reduce((s, p) => s + p.x, 0) / positions.length;
+        const cy = positions.reduce((s, p) => s + p.y, 0) / positions.length;
+        const expanded = positions.map(p => ({
+            x: cx + (p.x - cx) * 1.15,
+            y: cy + (p.y - cy) * 1.15
+        }));
+        ctx.moveTo(expanded[0].x, expanded[0].y);
+        expanded.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 0.4;
+        ctx.stroke();
+        // Label
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(h.label, cx, cy - 5);
+        ctx.restore();
+    });
+});
+</script>
+</body>
+</html>

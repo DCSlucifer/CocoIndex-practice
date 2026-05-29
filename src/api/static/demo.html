@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RAG Evidence Demo</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --ink: #20242a;
+      --muted: #667085;
+      --line: #d9dee7;
+      --accent: #23685b;
+      --accent-strong: #174b41;
+      --amber: #9a6500;
+      --blue: #315f9f;
+      --danger: #a83232;
+      --shadow: 0 8px 24px rgba(30, 41, 59, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    button,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 32px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      max-width: 740px;
+    }
+
+    .health {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: min(460px, 100%);
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .pill strong {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.4fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 16px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      color: var(--ink);
+      background: #fbfcfd;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(35, 104, 91, 0.14);
+    }
+
+    .samples {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .sample {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      text-align: left;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .sample:hover {
+      border-color: var(--accent);
+      color: var(--accent-strong);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .primary {
+      min-height: 40px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      padding: 9px 14px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .primary:hover {
+      background: var(--accent-strong);
+    }
+
+    .primary:disabled {
+      background: #98a2b3;
+      cursor: wait;
+    }
+
+    .status {
+      color: var(--muted);
+      min-height: 22px;
+    }
+
+    .model-guide {
+      margin-bottom: 18px;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.6fr) minmax(360px, 1.4fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fbfcfd;
+      color: var(--ink);
+      padding: 8px 10px;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(35, 104, 91, 0.14);
+    }
+
+    .warning {
+      margin-top: 12px;
+      border-left: 3px solid var(--amber);
+      background: #fff8e8;
+      color: #5f3e00;
+      padding: 10px 12px;
+      border-radius: 6px;
+    }
+
+    .command-box {
+      margin: 0;
+      max-height: 390px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #111827;
+      color: #e5e7eb;
+      padding: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.45 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+
+    .secondary {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 7px 11px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent-strong);
+    }
+
+    .answer {
+      min-height: 180px;
+      white-space: normal;
+      font-size: 16px;
+    }
+
+    .empty {
+      color: var(--muted);
+    }
+
+    .error {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+
+    .item-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 650;
+      word-break: break-word;
+    }
+
+    .meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      word-break: break-word;
+    }
+
+    .snippet {
+      margin-top: 8px;
+      color: #344054;
+    }
+
+    .score {
+      color: var(--blue);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .confidence {
+      color: var(--amber);
+      font-weight: 650;
+    }
+
+    .timing {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      background: #fbfcfd;
+    }
+
+    .metric .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric .value {
+      display: block;
+      margin-top: 4px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    @media (max-width: 920px) {
+      header,
+      .workspace,
+      .grid-two,
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        display: grid;
+      }
+
+      .health {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>RAG Evidence Demo</h1>
+        <div class="subtitle">CocoIndex vector retrieval, Graphify graph evidence, and gpt-4o-mini answers with citations.</div>
+      </div>
+      <div class="health" id="health">
+        <span class="pill">API <strong>checking</strong></span>
+      </div>
+    </header>
+
+    <section class="panel model-guide">
+      <div class="panel-header">
+        <h2>Embedding Model Switch Guide</h2>
+        <span class="pill">Manual terminal step <strong>safe</strong></span>
+      </div>
+      <div class="panel-body guide-grid">
+        <div>
+          <div class="field">
+            <label for="target-model">Target embedding model</label>
+            <select id="target-model">
+              <option value="text-embedding-3-large|3072">text-embedding-3-large / 3072</option>
+              <option value="text-embedding-3-small|1536">text-embedding-3-small / 1536</option>
+            </select>
+          </div>
+          <div class="warning" id="model-warning">
+            This guide does not execute drop/update from the browser. Run the commands manually so the destructive rebuild stays under operator control.
+          </div>
+          <div class="actions">
+            <button class="secondary" id="copy-commands">Copy commands</button>
+            <span class="status" id="copy-status"></span>
+          </div>
+          <div class="meta" id="current-model">Current retrieval model: checking</div>
+        </div>
+        <pre class="command-box" id="model-commands"></pre>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Question</h2>
+        </div>
+        <div class="panel-body">
+          <textarea id="question">How does the system reindex when embedding model changes?</textarea>
+          <div class="samples">
+            <button class="sample" data-question="How does the system reindex when embedding model changes?">How does the system reindex when embedding model changes?</button>
+            <button class="sample" data-question="What confidence tags does graphify use on edges?">What confidence tags does graphify use on edges?</button>
+            <button class="sample" data-question="What scaling considerations are described in the long-form RAG whitepaper?">What scaling considerations are described in the long-form RAG whitepaper?</button>
+            <button class="sample" data-question="Why use Strategy B with two parallel pipelines?">Why use Strategy B with two parallel pipelines?</button>
+          </div>
+          <div class="actions">
+            <button class="primary" id="ask">Ask RAG</button>
+            <span class="status" id="status"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Answer</h2>
+          <span class="pill" id="answer-model">model <strong>-</strong></span>
+        </div>
+        <div class="panel-body">
+          <div class="answer empty" id="answer">No answer yet.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-two">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Citations</h2>
+        </div>
+        <div class="panel-body">
+          <div class="list" id="citations"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Timing and Model</h2>
+        </div>
+        <div class="panel-body">
+          <div class="timing" id="timing"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid-two">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Vector Evidence</h2>
+        </div>
+        <div class="panel-body">
+          <div class="list" id="vector"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Graph Evidence</h2>
+        </div>
+        <div class="panel-body">
+          <div class="list" id="graph"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questionEl = document.getElementById("question");
+    const askEl = document.getElementById("ask");
+    const statusEl = document.getElementById("status");
+    const healthEl = document.getElementById("health");
+    const answerEl = document.getElementById("answer");
+    const answerModelEl = document.getElementById("answer-model");
+    const targetModelEl = document.getElementById("target-model");
+    const modelCommandsEl = document.getElementById("model-commands");
+    const modelWarningEl = document.getElementById("model-warning");
+    const currentModelEl = document.getElementById("current-model");
+    const copyCommandsEl = document.getElementById("copy-commands");
+    const copyStatusEl = document.getElementById("copy-status");
+    const citationsEl = document.getElementById("citations");
+    const vectorEl = document.getElementById("vector");
+    const graphEl = document.getElementById("graph");
+    const timingEl = document.getElementById("timing");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function fileName(path) {
+      const parts = String(path ?? "").split(/[\\/]/);
+      return parts[parts.length - 1] || path || "-";
+    }
+
+    function fmtMs(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "-";
+      return `${num.toFixed(1)} ms`;
+    }
+
+    function empty(text) {
+      return `<div class="empty">${escapeHtml(text)}</div>`;
+    }
+
+    function selectedModel() {
+      const [model, dimensions] = targetModelEl.value.split("|");
+      return { model, dimensions };
+    }
+
+    function buildModelCommands() {
+      const target = selectedModel();
+      return [
+        "# Manual terminal step: stop the running Uvicorn process first.",
+        "# In the Uvicorn terminal, press Ctrl+C.",
+        "",
+        "cd \"D:\\Rag vsf\"",
+        "$env:PYTHONPATH=\"src\"",
+        "",
+        "# Update .env to the target embedding model.",
+        "# Keep OPENAI_API_KEY as-is; do not paste it in a shared screen.",
+        "\"EMBED_PROVIDER=openai\"",
+        `"EMBED_MODEL=${target.model}"`,
+        `"EMBED_DIMENSIONS=${target.dimensions}"`,
+        "",
+        "# Rebuild the vector index with the selected model.",
+        ".\\.venv\\Scripts\\python.exe -m indexing.flow drop",
+        ".\\.venv\\Scripts\\python.exe -m indexing.flow update",
+        "",
+        "# Restart API so retrieval.py reloads EMBED_CONFIG.",
+        ".\\.venv\\Scripts\\python.exe -m uvicorn api.retrieval:app --host 127.0.0.1 --port 8003",
+        "",
+        "# In another terminal, confirm health shows the selected model.",
+        "Invoke-RestMethod http://127.0.0.1:8003/health"
+      ].join("\n");
+    }
+
+    function updateModelGuide() {
+      const target = selectedModel();
+      modelCommandsEl.textContent = buildModelCommands();
+      modelWarningEl.textContent = `Selected ${target.model}/${target.dimensions}. If the dimension changes, use drop + update before asking questions again. Production should use a shadow index/table instead of dropping the live index.`;
+    }
+
+    async function loadHealth() {
+      try {
+        const res = await fetch("/health");
+        const data = await res.json();
+        healthEl.innerHTML = [
+          `<span class="pill">API <strong>${data.ok ? "online" : "offline"}</strong></span>`,
+          `<span class="pill">retrieval <strong>${escapeHtml(data.model)}</strong></span>`,
+          `<span class="pill">graph nodes <strong>${escapeHtml(data.graph_nodes)}</strong></span>`,
+          `<span class="pill">response cache <strong>${Math.round((data.response_cache?.hit_rate ?? 0) * 100)}%</strong></span>`
+        ].join("");
+        currentModelEl.textContent = `Current retrieval model: ${data.model || "-"}`;
+      } catch (err) {
+        healthEl.innerHTML = `<span class="pill">API <strong>offline</strong></span>`;
+        currentModelEl.textContent = "Current retrieval model: offline";
+      }
+    }
+
+    function renderCitations(citations) {
+      if (!citations?.length) {
+        citationsEl.innerHTML = empty("No citations.");
+        return;
+      }
+      citationsEl.innerHTML = citations.map((citation) => `
+        <article class="item">
+          <div class="item-title">
+            <span>[${escapeHtml(citation.id)}] ${escapeHtml(citation.source_name)}</span>
+            <span>${citation.page_number ? `p.${escapeHtml(citation.page_number)}` : ""}</span>
+          </div>
+          <div class="meta">${escapeHtml(citation.section_title || "No section")} | ${escapeHtml(citation.source_path)}</div>
+          <div class="snippet">${escapeHtml(citation.snippet)}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderVector(hits) {
+      if (!hits?.length) {
+        vectorEl.innerHTML = empty("No vector hits.");
+        return;
+      }
+      vectorEl.innerHTML = hits.map((hit, index) => `
+        <article class="item">
+          <div class="item-title">
+            <span>${index + 1}. ${escapeHtml(fileName(hit.source_path))}</span>
+            <span class="score">${Number(hit.rerank_score ?? hit.score ?? 0).toFixed(3)}</span>
+          </div>
+          <div class="meta">${escapeHtml(hit.section_title || "No section")} ${hit.page_number ? `| page ${escapeHtml(hit.page_number)}` : ""}</div>
+          <div class="snippet">${escapeHtml(String(hit.chunk_text || "").slice(0, 340))}</div>
+        </article>
+      `).join("");
+    }
+
+    function renderGraph(hits) {
+      if (!hits?.length) {
+        graphEl.innerHTML = empty("No graph hits.");
+        return;
+      }
+      graphEl.innerHTML = hits.slice(0, 10).map((hit, index) => {
+        const label = hit.node?.label || hit.node?.id || "Graph node";
+        return `
+          <article class="item">
+            <div class="item-title">
+              <span>${index + 1}. ${escapeHtml(label)}</span>
+              <span class="confidence">${escapeHtml(hit.confidence || "unknown")}</span>
+            </div>
+            <div class="meta">${escapeHtml(hit.relation || "related")} | ${escapeHtml(hit.source_file || hit.source_path || "unknown source")}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderTiming(data) {
+      const timing = data.timing_ms || {};
+      timingEl.innerHTML = [
+        ["answer", fmtMs(timing.answer_ms)],
+        ["embed", fmtMs(timing.embed_ms)],
+        ["pgvector", fmtMs(timing.pg_ms)],
+        ["graph", fmtMs(timing.graph_ms)],
+        ["cache", data.cached ? "hit" : "miss"],
+        ["answer model", data.model || "-"],
+        ["retrieval model", data.retrieval_model || "-"]
+      ].map(([label, value]) => `
+        <div class="metric">
+          <span class="label">${escapeHtml(label)}</span>
+          <span class="value">${escapeHtml(value)}</span>
+        </div>
+      `).join("");
+    }
+
+    async function ask() {
+      const question = questionEl.value.trim();
+      if (!question) return;
+
+      askEl.disabled = true;
+      statusEl.textContent = "Running";
+      answerEl.className = "answer empty";
+      answerEl.textContent = "Waiting for retrieval and answer generation.";
+
+      try {
+        const res = await fetch("/answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, top_k: 5, graph_depth: 1 })
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        answerEl.className = "answer";
+        answerEl.innerHTML = escapeHtml(data.answer).replaceAll("\n", "<br>");
+        answerModelEl.innerHTML = `model <strong>${escapeHtml(data.model)}</strong>`;
+        renderCitations(data.citations);
+        renderVector(data.vector_hits);
+        renderGraph(data.graph_hits);
+        renderTiming(data);
+        statusEl.textContent = "Done";
+        loadHealth();
+      } catch (err) {
+        answerEl.className = "answer error";
+        answerEl.textContent = err.message || String(err);
+        statusEl.textContent = "Error";
+      } finally {
+        askEl.disabled = false;
+      }
+    }
+
+    document.querySelectorAll(".sample").forEach((button) => {
+      button.addEventListener("click", () => {
+        questionEl.value = button.dataset.question;
+        questionEl.focus();
+      });
+    });
+
+    targetModelEl.addEventListener("change", updateModelGuide);
+    copyCommandsEl.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(modelCommandsEl.textContent);
+        copyStatusEl.textContent = "Copied";
+      } catch (err) {
+        copyStatusEl.textContent = "Select and copy manually";
+      }
+    });
+
+    askEl.addEventListener("click", ask);
+    questionEl.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        ask();
+      }
+    });
+
+    updateModelGuide();
+    loadHealth();
+  </script>
+</body>
+</html>

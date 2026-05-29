@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="950" viewBox="0 0 1400 950" role="img" aria-labelledby="title desc">
+  <title id="title">Hybrid RAG architecture with CocoIndex, Graphify, FastAPI, and pgvector</title>
+  <desc id="desc">Architecture diagram showing users, CLI commands, FastAPI API, RAG services, storage, caches, OpenAI embeddings, reports, and CocoIndex state.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5b6472"/>
+    </marker>
+    <marker id="arrow-dashed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#8b9099"/>
+    </marker>
+    <style>
+      .bg { fill: #ffffff; }
+      .lane-users { fill: #e8fae9; stroke: #d7f4da; }
+      .lane-rag { fill: #f3edff; stroke: #e2d6ff; }
+      .tag { font: 600 16px Arial, sans-serif; fill: #222936; }
+      .label { font: 15px Arial, sans-serif; fill: #222936; }
+      .small { font: 12px Arial, sans-serif; fill: #222936; }
+      .tiny { font: 11px Arial, sans-serif; fill: #222936; }
+      .box { fill: #ffffff; stroke: #5f6670; stroke-width: 1.5; rx: 4; }
+      .actor { fill: #a9efbd; stroke: #63c884; stroke-width: 1.5; rx: 32; }
+      .job { fill: #d9bcf7; stroke: #a37ad8; stroke-width: 1.5; rx: 4; }
+      .store { fill: #a8d8f4; stroke: #6eaed0; stroke-width: 1.5; }
+      .external { fill: #ffffff; stroke: #6a6f78; stroke-width: 1.5; }
+      .flow { stroke: #5b6472; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+      .flow-thin { stroke: #5b6472; stroke-width: 1.2; fill: none; marker-end: url(#arrow); }
+      .flow-dashed { stroke: #8b9099; stroke-width: 1.5; stroke-dasharray: 8 7; fill: none; marker-end: url(#arrow-dashed); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1400" height="860"/>
+
+  <rect class="lane-users" x="40" y="55" width="210" height="690"/>
+  <rect class="lane-rag" x="655" y="45" width="450" height="690"/>
+
+  <rect x="55" y="68" width="175" height="28" rx="6" fill="#b8f7c8" stroke="#63c884"/>
+  <text class="tag" x="143" y="88" text-anchor="middle">Users and Operators</text>
+  <rect x="665" y="58" width="195" height="28" rx="6" fill="#d9c8ff" stroke="#8b62dd"/>
+  <text class="tag" x="762" y="78" text-anchor="middle">RAG Services and Jobs</text>
+
+  <rect class="actor" x="85" y="105" width="120" height="86"/>
+  <text class="label" x="145" y="154" text-anchor="middle">Developer</text>
+
+  <rect class="actor" x="85" y="612" width="120" height="86"/>
+  <text class="label" x="145" y="650" text-anchor="middle">QA and Eval</text>
+  <text class="label" x="145" y="672" text-anchor="middle">Runner</text>
+
+  <rect class="box" x="390" y="105" width="120" height="86"/>
+  <text class="label" x="450" y="143" text-anchor="middle">CLI</text>
+  <text class="label" x="450" y="166" text-anchor="middle">Commands</text>
+
+  <rect class="box" x="390" y="612" width="120" height="86"/>
+  <text class="label" x="450" y="650" text-anchor="middle">FastAPI</text>
+  <text class="label" x="450" y="673" text-anchor="middle">HTTP API</text>
+
+  <rect class="job" x="700" y="105" width="120" height="86"/>
+  <text class="label" x="760" y="132" text-anchor="middle">Embedding</text>
+  <text class="label" x="760" y="154" text-anchor="middle">Migration</text>
+  <text class="label" x="760" y="176" text-anchor="middle">Reindex</text>
+
+  <rect class="job" x="945" y="105" width="120" height="86"/>
+  <text class="label" x="1005" y="142" text-anchor="middle">CocoIndex</text>
+  <text class="label" x="1005" y="165" text-anchor="middle">Indexing Job</text>
+
+  <rect class="job" x="700" y="230" width="120" height="86"/>
+  <text class="label" x="760" y="268" text-anchor="middle">Graphify</text>
+  <text class="label" x="760" y="291" text-anchor="middle">Graph Job</text>
+
+  <rect class="job" x="700" y="480" width="120" height="86"/>
+  <text class="label" x="760" y="516" text-anchor="middle">Evaluation and</text>
+  <text class="label" x="760" y="539" text-anchor="middle">Load Scripts</text>
+
+  <rect class="job" x="945" y="607" width="120" height="86"/>
+  <text class="label" x="1005" y="635" text-anchor="middle">Hybrid</text>
+  <text class="label" x="1005" y="657" text-anchor="middle">Retrieval</text>
+  <text class="label" x="1005" y="679" text-anchor="middle">Service</text>
+
+  <g>
+    <ellipse class="store" cx="1300" cy="106" rx="62" ry="14"/>
+    <path class="store" d="M1238 106 v80 c0 8 28 14 62 14 s62-6 62-14 v-80"/>
+    <ellipse class="store" cx="1300" cy="186" rx="62" ry="14"/>
+    <text class="label" x="1300" y="137" text-anchor="middle">PostgreSQL</text>
+    <text class="label" x="1300" y="159" text-anchor="middle">pgvector:</text>
+    <text class="label" x="1300" y="181" text-anchor="middle">rag.doc_chunks</text>
+  </g>
+
+  <g>
+    <ellipse class="store" cx="1300" cy="245" rx="62" ry="14"/>
+    <path class="store" d="M1238 245 v80 c0 8 28 14 62 14 s62-6 62-14 v-80"/>
+    <ellipse class="store" cx="1300" cy="325" rx="62" ry="14"/>
+    <text class="label" x="1300" y="281" text-anchor="middle">Source Docs:</text>
+    <text class="label" x="1300" y="303" text-anchor="middle">md, pdf, py, txt</text>
+  </g>
+
+  <g>
+    <ellipse class="store" cx="1300" cy="375" rx="62" ry="14"/>
+    <path class="store" d="M1238 375 v80 c0 8 28 14 62 14 s62-6 62-14 v-80"/>
+    <ellipse class="store" cx="1300" cy="455" rx="62" ry="14"/>
+    <text class="label" x="1300" y="407" text-anchor="middle">Graphify</text>
+    <text class="label" x="1300" y="429" text-anchor="middle">Artifacts:</text>
+    <text class="small" x="1300" y="449" text-anchor="middle">graph.json, report</text>
+  </g>
+
+  <g>
+    <ellipse class="store" cx="1300" cy="505" rx="62" ry="14"/>
+    <path class="store" d="M1238 505 v80 c0 8 28 14 62 14 s62-6 62-14 v-80"/>
+    <ellipse class="store" cx="1300" cy="585" rx="62" ry="14"/>
+    <text class="label" x="1300" y="538" text-anchor="middle">Reports:</text>
+    <text class="label" x="1300" y="560" text-anchor="middle">eval and long</text>
+    <text class="label" x="1300" y="582" text-anchor="middle">PDF checks</text>
+  </g>
+
+  <g>
+    <ellipse class="store" cx="1300" cy="635" rx="62" ry="14"/>
+    <path class="store" d="M1238 635 v80 c0 8 28 14 62 14 s62-6 62-14 v-80"/>
+    <ellipse class="store" cx="1300" cy="715" rx="62" ry="14"/>
+    <text class="label" x="1300" y="675" text-anchor="middle">In-memory</text>
+    <text class="label" x="1300" y="697" text-anchor="middle">Query Caches</text>
+  </g>
+
+  <rect class="external" x="1240" y="748" width="120" height="84"/>
+  <text class="small" x="1300" y="781" text-anchor="middle">OpenAI Embeddings</text>
+  <text class="small" x="1300" y="803" text-anchor="middle">API:</text>
+  <text class="small" x="1300" y="825" text-anchor="middle">text-embedding-3-large</text>
+
+  <g>
+    <ellipse class="store" cx="1300" cy="860" rx="62" ry="14"/>
+    <path class="store" d="M1238 860 v60 c0 8 28 14 62 14 s62-6 62-14 v-60"/>
+    <ellipse class="store" cx="1300" cy="920" rx="62" ry="14"/>
+    <text class="label" x="1300" y="890" text-anchor="middle">CocoIndex State:</text>
+    <text class="label" x="1300" y="912" text-anchor="middle">.cocoindex</text>
+  </g>
+
+  <line class="flow-thin" x1="205" y1="148" x2="390" y2="148"/>
+  <text class="tiny" x="298" y="137" text-anchor="middle">manage corpus and reindex</text>
+
+  <line class="flow-thin" x1="205" y1="655" x2="390" y2="655"/>
+  <text class="tiny" x="296" y="642" text-anchor="middle">ask questions and run checks</text>
+
+  <path class="flow" d="M510 132 H590 Q610 132 610 152 V152 H700"/>
+  <text class="tiny" x="608" y="122" text-anchor="middle">drop, update, live</text>
+
+  <path class="flow" d="M820 148 H945"/>
+  <text class="tiny" x="882" y="137" text-anchor="middle">runs index flow</text>
+
+  <path class="flow" d="M510 168 H610 Q610 273 700 273"/>
+  <text class="tiny" x="610" y="208" text-anchor="start">graph update</text>
+
+  <path class="flow" d="M510 655 H945"/>
+  <text class="tiny" x="738" y="642" text-anchor="middle">POST /query and /answer</text>
+
+  <path class="flow" d="M510 190 V520 Q510 523 700 523"/>
+  <text class="tiny" x="520" y="350">run eval and load</text>
+
+  <path class="flow" d="M820 523 H890 Q890 650 945 650"/>
+  <text class="tiny" x="885" y="590" text-anchor="middle">calls retrieval</text>
+
+  <path class="flow" d="M1065 148 H1238"/>
+  <text class="tiny" x="1152" y="137" text-anchor="middle">writes vectors and metadata</text>
+
+  <path class="flow-thin" d="M1065 168 H1175 Q1175 285 1238 285"/>
+  <text class="tiny" x="1124" y="207" text-anchor="middle">reads files</text>
+
+  <path class="flow-thin" d="M820 273 H1238"/>
+  <text class="tiny" x="1024" y="260" text-anchor="middle">reads files</text>
+
+  <path class="flow" d="M820 296 H880 Q880 415 1238 415"/>
+  <text class="tiny" x="1015" y="402" text-anchor="middle">writes graph evidence</text>
+
+  <path class="flow" d="M820 523 H1238"/>
+  <text class="tiny" x="1020" y="510" text-anchor="middle">writes metrics</text>
+
+  <path class="flow" d="M1065 620 H1120 Q1120 148 1238 148"/>
+  <text class="tiny" x="1092" y="390" text-anchor="middle">vector search top-k</text>
+
+  <path class="flow" d="M1065 650 H1148 Q1148 415 1238 415"/>
+  <text class="tiny" x="1149" y="515" text-anchor="middle">graph expansion</text>
+
+  <path class="flow" d="M1065 678 H1238"/>
+  <text class="tiny" x="1160" y="665" text-anchor="middle">dedupe and rerank cache</text>
+
+  <path class="flow-dashed" d="M1005 607 V150 H1065"/>
+  <text class="tiny" x="985" y="392" text-anchor="middle">indexing embeds chunks</text>
+
+  <path class="flow-dashed" d="M1065 700 H1180 Q1180 790 1240 790"/>
+  <text class="tiny" x="1173" y="746" text-anchor="middle">retrieval embeds query</text>
+
+  <path class="flow" d="M1005 693 V890 H1238"/>
+  <text class="tiny" x="1055" y="866" text-anchor="start">stores lineage cache</text>
+</svg>
