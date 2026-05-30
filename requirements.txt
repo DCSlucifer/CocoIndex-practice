@@ -1,0 +1,26 @@
+# Pinned dependencies verified on Python 3.13.7 / Windows.
+# Versions mirror the working .venv (pip freeze), not just the README prose.
+# Install: .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
+# Indexing + graph pipelines
+cocoindex==1.0.6
+graphifyy==0.8.22
+
+# Retrieval API
+fastapi==0.136.3
+uvicorn==0.48.0
+
+# PostgreSQL / pgvector access
+asyncpg==0.31.0
+psycopg[binary,pool]==3.3.4
+pgvector==0.4.2
+
+# Document ingestion + config
+pypdf==6.12.2
+python-dotenv==1.2.2
+httpx==0.28.1
+numpy==2.4.6
+
+# Local embedding fallback + PDF fixtures
+sentence-transformers==5.5.1
+reportlab==4.5.1

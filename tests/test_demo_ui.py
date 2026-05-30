@@ -17,6 +17,28 @@ class DemoUiTests(unittest.TestCase):
         self.assertIn("Vector Evidence", html)
         self.assertIn("Graph Evidence", html)
 
+    def test_demo_html_supports_evidence_only_query_mode(self) -> None:
+        html_path = ROOT / "src" / "api" / "static" / "demo.html"
+
+        html = html_path.read_text(encoding="utf-8")
+
+        # Evidence-only toggle lets the demo hit /query (no LLM cost) as well as /answer.
+        self.assertIn('id="evidence-only"', html)
+        self.assertIn("Evidence only", html)
+        self.assertIn("/query", html)
+
+    def test_demo_html_surfaces_graph_known_and_offline_hint(self) -> None:
+        html_path = ROOT / "src" / "api" / "static" / "demo.html"
+
+        html = html_path.read_text(encoding="utf-8")
+
+        # Vector cards surface the graph cross-validation flag.
+        self.assertIn("graphBadge", html)
+        self.assertIn("graph_known", html)
+        # Offline state guides the user to a start command instead of just "offline".
+        self.assertIn('id="offline-hint"', html)
+        self.assertIn("serve_demo.ps1", html)
+
     def test_demo_html_guides_safe_manual_embedding_reindex(self) -> None:
         html_path = ROOT / "src" / "api" / "static" / "demo.html"
 

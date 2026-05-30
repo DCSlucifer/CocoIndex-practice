@@ -195,6 +195,21 @@
       min-height: 22px;
     }
 
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .toggle input {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
     .model-guide {
       margin-bottom: 18px;
     }
@@ -338,6 +353,28 @@
       font-weight: 650;
     }
 
+    .tag {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 650;
+      vertical-align: middle;
+    }
+
+    .tag-yes {
+      background: #e6f4f1;
+      color: var(--accent-strong);
+      border: 1px solid #bfe0d8;
+    }
+
+    .tag-no {
+      background: #fff1f0;
+      color: var(--danger);
+      border: 1px solid #f3c9c5;
+    }
+
     .timing {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -394,6 +431,8 @@
       </div>
     </header>
 
+    <div class="warning" id="offline-hint" style="display: none; margin-bottom: 18px;"></div>
+
     <section class="panel model-guide">
       <div class="panel-header">
         <h2>Embedding Model Switch Guide</h2>
@@ -436,6 +475,10 @@
           </div>
           <div class="actions">
             <button class="primary" id="ask">Ask RAG</button>
+            <label class="toggle" title="Call /query instead of /answer: show vector + graph evidence without an LLM call (faster, no OpenAI answer cost).">
+              <input type="checkbox" id="evidence-only" />
+              Evidence only (no LLM)
+            </label>
             <span class="status" id="status"></span>
           </div>
         </div>
@@ -496,8 +539,11 @@
   <script>
     const questionEl = document.getElementById("question");
     const askEl = document.getElementById("ask");
+    const evidenceOnlyEl = document.getElementById("evidence-only");
     const statusEl = document.getElementById("status");
+    let lastRetrievalModel = "-";
     const healthEl = document.getElementById("health");
+    const offlineHintEl = document.getElementById("offline-hint");
     const answerEl = document.getElementById("answer");
     const answerModelEl = document.getElementById("answer-model");
     const targetModelEl = document.getElementById("target-model");
@@ -533,6 +579,16 @@
 
     function empty(text) {
       return `<div class="empty">${escapeHtml(text)}</div>`;
+    }
+
+    function graphBadge(hit) {
+      if (hit.graph_known === true) {
+        return `<span class="tag tag-yes" title="Source doc duoc graph corroborate (co trong graph.json)">graph &#10003;</span>`;
+      }
+      if (hit.graph_known === false) {
+        return `<span class="tag tag-no" title="Source doc ngoai pham vi graph (vi du PDF) - van la vector hit hop le, khong bi loai">graph &#10007;</span>`;
+      }
+      return "";
     }
 
     function selectedModel() {
@@ -584,9 +640,24 @@
           `<span class="pill">response cache <strong>${Math.round((data.response_cache?.hit_rate ?? 0) * 100)}%</strong></span>`
         ].join("");
         currentModelEl.textContent = `Current retrieval model: ${data.model || "-"}`;
+        lastRetrievalModel = data.model || "-";
+        if (data.warnings && data.warnings.length) {
+          offlineHintEl.innerHTML =
+            data.warnings.map((w) => escapeHtml(w)).join("<br>") +
+            '<br>Reindex: <code>.\\.venv\\Scripts\\python.exe -m indexing.flow drop</code> &nbsp;rồi&nbsp; <code>... indexing.flow update</code>';
+          offlineHintEl.style.display = "block";
+        } else {
+          offlineHintEl.style.display = "none";
+        }
       } catch (err) {
         healthEl.innerHTML = `<span class="pill">API <strong>offline</strong></span>`;
         currentModelEl.textContent = "Current retrieval model: offline";
+        offlineHintEl.innerHTML =
+          'API chưa phản hồi. Khởi động rồi tải lại trang:<br>' +
+          '<code>.\\scripts\\serve_demo.ps1</code>' +
+          ' &nbsp;hoặc&nbsp; ' +
+          '<code>.\\.venv\\Scripts\\python.exe -m uvicorn api.retrieval:app --host 127.0.0.1 --port 8003</code>';
+        offlineHintEl.style.display = "block";
       }
     }
 
@@ -618,7 +689,7 @@
             <span>${index + 1}. ${escapeHtml(fileName(hit.source_path))}</span>
             <span class="score">${Number(hit.rerank_score ?? hit.score ?? 0).toFixed(3)}</span>
           </div>
-          <div class="meta">${escapeHtml(hit.section_title || "No section")} ${hit.page_number ? `| page ${escapeHtml(hit.page_number)}` : ""}</div>
+          <div class="meta">${escapeHtml(hit.section_title || "No section")} ${hit.page_number ? `| page ${escapeHtml(hit.page_number)}` : ""}${graphBadge(hit)}</div>
           <div class="snippet">${escapeHtml(String(hit.chunk_text || "").slice(0, 340))}</div>
         </article>
       `).join("");
@@ -665,13 +736,18 @@
       const question = questionEl.value.trim();
       if (!question) return;
 
+      const evidenceOnly = evidenceOnlyEl.checked;
+      const endpoint = evidenceOnly ? "/query" : "/answer";
+
       askEl.disabled = true;
-      statusEl.textContent = "Running";
+      statusEl.textContent = evidenceOnly ? "Retrieving evidence" : "Running";
       answerEl.className = "answer empty";
-      answerEl.textContent = "Waiting for retrieval and answer generation.";
+      answerEl.textContent = evidenceOnly
+        ? "Evidence-only mode: retrieving vector + graph evidence (no LLM call)."
+        : "Waiting for retrieval and answer generation.";
 
       try {
-        const res = await fetch("/answer", {
+        const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question, top_k: 5, graph_depth: 1 })
@@ -681,10 +757,19 @@
           throw new Error(text || `HTTP ${res.status}`);
         }
         const data = await res.json();
-        answerEl.className = "answer";
-        answerEl.innerHTML = escapeHtml(data.answer).replaceAll("\n", "<br>");
-        answerModelEl.innerHTML = `model <strong>${escapeHtml(data.model)}</strong>`;
-        renderCitations(data.citations);
+        // /query has no model fields; reuse the retrieval model from /health.
+        if (!data.retrieval_model) data.retrieval_model = lastRetrievalModel;
+        if (evidenceOnly) {
+          answerEl.className = "answer empty";
+          answerEl.textContent = "Evidence-only mode — no LLM answer was generated. Inspect the vector and graph evidence below. Uncheck the box and Ask again for a cited answer.";
+          answerModelEl.innerHTML = `model <strong>evidence only</strong>`;
+          citationsEl.innerHTML = empty("Citations are produced by /answer (LLM mode).");
+        } else {
+          answerEl.className = "answer";
+          answerEl.innerHTML = escapeHtml(data.answer).replaceAll("\n", "<br>");
+          answerModelEl.innerHTML = `model <strong>${escapeHtml(data.model)}</strong>`;
+          renderCitations(data.citations);
+        }
         renderVector(data.vector_hits);
         renderGraph(data.graph_hits);
         renderTiming(data);

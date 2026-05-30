@@ -1,0 +1,22 @@
+{
+  "all_passed": true,
+  "results": [
+    {
+      "provider": "openai",
+      "model": "text-embedding-3-large",
+      "dimensions": 3072,
+      "expected_model_name": "openai:text-embedding-3-large:3072",
+      "db_rows": 15,
+      "db_dims": [
+        3072
+      ],
+      "db_models": [
+        "openai:text-embedding-3-large:3072"
+      ],
+      "dims_ok": true,
+      "model_ok": true,
+      "passed": true,
+      "reindex_ms": 6752.4
+    }
+  ]
+}

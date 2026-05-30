@@ -153,6 +153,7 @@ question
   -> pgvector search LIMIT top_k * 8
   -> dedupe by chunk_hash
   -> deterministic rule rerank
+  -> annotate graph_known (cross-check vs graph corpus, không drop)
   -> graph expansion
   -> HybridResponse
 ```
@@ -168,7 +169,8 @@ File chính: `src/api/rerank.py`
 - section-aware embedding text
 - `section_title` và `page_number` để citation tốt hơn
 - rule rerank dựa trên section overlap, token overlap và phrase bonus
-- response cache và query embedding cache trong memory
+- response cache và query embedding cache trong memory (đã bảo vệ thread-safe bằng lock)
+- graph cross-validation: mỗi vector hit có thêm cờ `graph_known` cho biết graph có corroborate source doc đó không. Đây là annotation **không phá hủy** — không drop hit nào, nên evidence từ PDF (Graphify không ingest PDF) vẫn được giữ. `HybridResponse.graph_known_doc_filter_applied=true` khi graph có corpus để cross-check.
 
 ## Cấu trúc thư mục
 
@@ -182,6 +184,8 @@ File chính: `src/api/rerank.py`
 │   ├── evaluate_retrieval.py          # curated retrieval evaluation
 │   ├── load_test.py                   # local concurrent query load test
 │   ├── drift_test.py                  # đo drift CocoIndex vs Graphify
+│   ├── reindex_test.py                # e2e reindex test: build từng model, assert DB dim + model_name
+│   ├── serve_demo.ps1                 # one-command demo launcher (Postgres + index + graph + API)
 │   ├── make_pdf.py                    # tạo PDF fixture ngắn
 │   └── make_long_pdf.py               # tạo long PDF fixture
 ├── src/
@@ -246,7 +250,13 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 ```
 
-Cài dependencies chính:
+Cài dependencies (khuyến nghị, version đã pin và verify trong `requirements.txt`):
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+Hoặc cài thủ công từng package nếu cần:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install `
@@ -324,6 +334,26 @@ graph.html
 
 ## Chạy API và UI
 
+### Cách nhanh nhất: một lệnh
+
+Script `scripts/serve_demo.ps1` gộp toàn bộ bước demo: kiểm tra/khởi động Postgres, build vector index + graph nếu thiếu (incremental, **không** drop), rồi start API.
+
+```powershell
+.\scripts\serve_demo.ps1
+```
+
+Mở `http://127.0.0.1:8003/demo` sau khi script báo API đã chạy.
+
+Tùy chọn:
+
+```powershell
+.\scripts\serve_demo.ps1 -Rebuild        # drop + build lại index/graph từ đầu
+.\scripts\serve_demo.ps1 -Port 8004      # chạy port khác
+.\scripts\serve_demo.ps1 -SkipBuild      # chỉ start API, không đụng index/graph
+```
+
+### Cách thủ công
+
 Start API trên port `8003`:
 
 ```powershell
@@ -336,6 +366,10 @@ Mở UI demo:
 http://127.0.0.1:8003/demo
 ```
 
+UI cho phép bấm câu hỏi mẫu rồi xem answer, citations, vector evidence, graph evidence và timing. Checkbox **Evidence only (no LLM)** chuyển sang gọi `/query` thay vì `/answer`: chỉ lấy vector + graph evidence, không gọi LLM — nhanh hơn, không tốn chi phí answer, hữu ích khi demo retrieval mà không cần sinh câu trả lời.
+
+Mỗi vector card có badge **graph ✓/✗** (theo cờ `graph_known`) cho biết graph có corroborate source doc không. Khi API offline hoặc index lệch dimension so với config, UI hiện banner cảnh báo kèm lệnh khắc phục (start API / reindex).
+
 Health check từ terminal khác:
 
 ```powershell
@@ -345,12 +379,16 @@ Invoke-RestMethod http://127.0.0.1:8003/health
 Kỳ vọng các trường quan trọng:
 
 ```text
-ok                    True
-model                 openai:text-embedding-3-large:3072
-embedding_provider    openai
-embedding_dimensions  3072
-graph_nodes           > 0
+ok                       True
+model                    openai:text-embedding-3-large:3072
+embedding_provider       openai
+embedding_dimensions     3072
+db_embedding_dimensions  [3072]
+index_ready              True
+graph_nodes              > 0
 ```
+
+`/health` còn so chiều vector trong DB với config: nếu lệch (đổi model mà chưa reindex), `index_ready=false` và `warnings` sẽ chỉ rõ cần `indexing.flow drop + update`, thay vì để `/query` vỡ 500 lúc runtime.
 
 ## Gọi API thủ công
 
@@ -381,7 +419,7 @@ $r.timing_ms
 Xem vector evidence:
 
 ```powershell
-$r.vector_hits | Select-Object source_path, section_title, page_number, vector_score, rerank_score
+$r.vector_hits | Select-Object source_path, section_title, page_number, vector_score, rerank_score, graph_known
 ```
 
 Xem graph evidence:
@@ -594,6 +632,20 @@ EMBED_DIMENSIONS=384
 
 Dùng fallback này khi cần test offline hoặc không muốn gọi OpenAI API. Nếu dimension thay đổi so với DB hiện tại, vẫn cần `drop` và `update`.
 
+### Test reindex tự động
+
+`scripts/reindex_test.py` chạy full cycle cho từng model: `drop` + `update` rồi assert DB có đúng `vector_dims` và `model_name`. Đây là bằng chứng e2e cho khả năng reindex.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\reindex_test.py `
+  --models text-embedding-3-small:1536,text-embedding-3-large:3072 `
+  --out reports\reindex_test.json
+```
+
+Lưu ý: mỗi model rebuild toàn bộ index và gọi embedding provider (tốn token). Script kết thúc với `RESULT: ALL PASSED` và để DB ở model cuối trong danh sách.
+
+Mức unit (rẻ, không cần DB/OpenAI): `tests/test_embedding_config.py` assert `memo_key`/`model_name_for_storage` đổi khi model đổi và ổn định khi config y nguyên — chính là cơ chế trigger reindex của CocoIndex.
+
 ## Troubleshooting
 
 ### `ModuleNotFoundError: No module named 'indexing'` hoặc `No module named 'api'`
@@ -671,7 +723,7 @@ Get-Content .env | ForEach-Object {
 
 Các giới hạn chính:
 
-- Cache hiện là in-memory, chưa share giữa nhiều API replicas.
+- Cache hiện là in-memory (đã thread-safe bằng lock cho concurrent load), nhưng chưa share giữa nhiều API replicas; production nên dùng cache ngoài như Redis.
 - `graph.json` phù hợp POC; graph lớn nên cân nhắc Neo4j, Kuzu hoặc graph snapshot có version.
 - OpenAI embedding API là external bottleneck ở cold path.
 - pgvector production cần HNSW/IVFFlat tuning khi corpus lớn.

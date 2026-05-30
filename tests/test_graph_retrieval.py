@@ -50,6 +50,24 @@ class GraphRetrievalTests(unittest.TestCase):
             )
         )
 
+    def test_graph_known_corpus_is_populated(self) -> None:
+        # The /query cross-check is meaningful only when the graph exposes a
+        # known corpus; an empty set would make every annotation None.
+        self.assertTrue(self.graph.known_source_files)
+
+    def test_pdf_is_not_graph_known_but_markdown_is(self) -> None:
+        # Graphify does not ingest PDFs, so PDF vector hits must annotate as
+        # graph_known=False (NOT be dropped). Markdown the graph covers is True.
+        self.assertTrue(
+            self.graph.is_graph_known_source(r"D:\Rag vsf\data\docs\embedding_models.md")
+        )
+        self.assertFalse(
+            self.graph.is_graph_known_source(r"D:\Rag vsf\data\docs\rag_paper_intro.pdf")
+        )
+        self.assertFalse(
+            self.graph.is_graph_known_source(r"D:\Rag vsf\data\docs\rag_long_whitepaper.pdf")
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
