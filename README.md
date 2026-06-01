@@ -7,7 +7,7 @@
 
 Hệ thống hiện hỗ trợ ingest nhiều loại tài liệu (`.md`, `.txt`, `.py`, `.pdf`), truy vấn qua FastAPI, sinh câu trả lời có citation, chạy evaluation, kiểm tra long PDF, đo drift giữa hai pipeline và load test cục bộ.
 
-> 📘 Muốn hiểu sâu thuật toán/hàm core, kiến trúc, cách demo và học CocoIndex/Graphify để trình bày với mentor: xem [`docs/core-guide.md`](docs/core-guide.md).
+> 📘 Muốn hiểu sâu thuật toán/hàm core, kiến trúc, cách demo và học CocoIndex/Graphify: xem [`docs/core-guide.md`](docs/core-guide.md).
 
 ## Trạng thái hiện tại
 
