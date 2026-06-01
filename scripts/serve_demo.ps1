@@ -80,26 +80,11 @@ if ($SkipBuild) {
     & $VenvPy -m indexing.flow drop
     & $VenvPy -m indexing.flow update
   } else {
-    $countRaw = & $VenvPy -c @'
-import os
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-    import psycopg
-    url = os.getenv("PG_CONN") or os.getenv("POSTGRES_URL")
-    with psycopg.connect(url, connect_timeout=5) as conn, conn.cursor() as cur:
-        cur.execute("SELECT count(*) FROM rag.doc_chunks")
-        print(cur.fetchone()[0])
-except Exception:
-    print(-1)
-'@
-    $count = ($countRaw | Select-Object -Last 1).ToString().Trim()
-    if ($count -eq "0" -or $count -eq "-1") {
-      Write-Step "Vector index trong/chua co (count=$count) -> indexing.flow update"
-      & $VenvPy -m indexing.flow update
-    } else {
-      Write-Host "Vector index da co $count chunks, bo qua (dung -Rebuild de build lai)." -ForegroundColor Green
-    }
+    # Incremental sync: CocoIndex memoize theo nội dung + memo_key của embedder,
+    # nên neu file/model khong doi thi KHONG re-embed (khong goi OpenAI). An toan
+    # de chay moi lan. Dung -Rebuild khi muon build sach, -SkipBuild de bo qua.
+    Write-Step "Sync vector index (incremental update)"
+    & $VenvPy -m indexing.flow update
   }
 
   # --- 3. Graph (Graphify) ---

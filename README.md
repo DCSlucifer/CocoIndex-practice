@@ -7,6 +7,8 @@
 
 Hệ thống hiện hỗ trợ ingest nhiều loại tài liệu (`.md`, `.txt`, `.py`, `.pdf`), truy vấn qua FastAPI, sinh câu trả lời có citation, chạy evaluation, kiểm tra long PDF, đo drift giữa hai pipeline và load test cục bộ.
 
+> 📘 Muốn hiểu sâu thuật toán/hàm core, kiến trúc, cách demo và học CocoIndex/Graphify để trình bày với mentor: xem [`docs/core-guide.md`](docs/core-guide.md).
+
 ## Trạng thái hiện tại
 
 | Hạng mục | Trạng thái | Bằng chứng chính |
@@ -39,7 +41,7 @@ Kết quả long PDF check gần nhất trong `reports/long_pdf_retrieval_check.
 
 ## Kiến trúc
 
-![Hybrid RAG Architecture](docs/architecture-diagram.svg)
+![Reindexable Hybrid RAG Overall Architecture](docs/architecture-overall.png)
 
 Thiết kế chọn **Strategy B: hai pipeline song song**:
 
