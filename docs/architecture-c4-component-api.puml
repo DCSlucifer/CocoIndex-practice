@@ -1,0 +1,47 @@
+@startuml Reindexable_Hybrid_RAG_C4_Component_API
+!NEW_C4_STYLE=1
+' C4-PlantUML from plantuml-stdlib.
+' The official raw include also works:
+' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!include <C4/C4_Component>
+
+LAYOUT_LEFT_RIGHT()
+LAYOUT_WITH_LEGEND()
+' Orthogonal connectors: right-angle, no wavy splines.
+skinparam linetype ortho
+skinparam nodesep 55
+skinparam ranksep 150
+
+title FastAPI Retrieval API - C4 Component Diagram
+
+Container(demo_ui, "Browser Demo UI", "Static HTML / JavaScript", "Calls /query and /answer.")
+
+ContainerDb(pgvector, "PostgreSQL pgvector", "rag.doc_chunks", "Vector chunks and metadata.")
+ContainerDb(graph_json, "Graphify graph.json", "JSON artifact", "Graph evidence.")
+System_Ext(openai, "OpenAI APIs", "Embeddings and chat completions.")
+
+Container_Boundary(api_boundary, "FastAPI Retrieval API - src/api") {
+    Component(router, "API Endpoints", "retrieval.py", "/health, /query, /answer, /demo.")
+    Component(cache, "Query / Response Cache", "retrieval.py", "In-process embed + response caches keyed by question, params, model, and graph mtime.")
+    Component(retrieval, "Hybrid Retrieval", "retrieval.py", "Coordinates query embedding, vector evidence, graph evidence, dedupe, and rerank.")
+    Component(embedder, "Query Embedder", "embedding_config.py", "OpenAIEmbeddingClient (or local SentenceTransformer): turns the query into a vector.")
+    Component(vector_search, "Vector Evidence", "retrieval.py + rerank.py", "pgvector search plus deterministic dedupe + rule rerank.")
+    Component(graph_retrieval, "Graph Evidence", "graph_retrieval.py", "Graph node ranking and neighbor expansion.")
+    Component(answering, "Answer Generation", "answering.py", "Builds citations from hits and calls chat completion.")
+}
+
+Rel(demo_ui, router, "Calls", "HTTP")
+Rel(router, cache, "Checks / stores")
+Rel(router, retrieval, "Retrieves evidence")
+Rel(router, answering, "Generates answer")
+
+Rel(retrieval, embedder, "Embeds query")
+Rel(retrieval, vector_search, "Gets vector hits")
+Rel(retrieval, graph_retrieval, "Gets graph hits")
+
+Rel(embedder, openai, "Embeddings", "HTTPS")
+Rel(vector_search, pgvector, "Searches")
+Rel(graph_retrieval, graph_json, "Reads")
+Rel(answering, openai, "Generates answer", "HTTPS")
+
+@enduml

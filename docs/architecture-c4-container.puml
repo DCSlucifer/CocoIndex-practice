@@ -1,0 +1,48 @@
+@startuml Reindexable_Hybrid_RAG_C4_Container
+!NEW_C4_STYLE=1
+' C4-PlantUML from plantuml-stdlib.
+' The official raw include also works:
+' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include <C4/C4_Container>
+
+LAYOUT_LANDSCAPE()
+LAYOUT_WITH_LEGEND()
+' Orthogonal connectors: right-angle, no wavy splines.
+skinparam linetype ortho
+skinparam nodesep 90
+skinparam ranksep 130
+
+title Reindexable Hybrid RAG - C4 Container Diagram
+
+Person(user, "Demo User", "Asks questions and reviews cited answers.")
+Person(operator, "Developer / Operator", "Indexes, builds the graph, and reindexes the corpus.")
+System_Ext(openai, "OpenAI APIs", "Embeddings and chat completions.")
+
+System_Boundary(rag, "Reindexable Hybrid RAG POC") {
+    Container(demo_ui, "Browser Demo UI", "Static HTML / JavaScript", "Displays answers, citations, and evidence.")
+    Container(api, "FastAPI Retrieval API", "FastAPI / Uvicorn", "Hybrid retrieval + answer generation; /health surfaces embedding-dimension drift.")
+    Container(coco_flow, "CocoIndex Indexing Flow", "CocoIndex (src/indexing/flow.py)", "Chunks + embeds the corpus into pgvector. Reindexes affected rows when EMBED_MODEL/config or @coco.fn code changes.")
+    Container(graphify, "Graphify CLI", "Graphify (external tool)", "Builds the knowledge graph artifact from source documents.")
+
+    ContainerDb(corpus, "Source Corpus", "Local files", "Markdown, text, Python, and PDF documents.")
+    ContainerDb(pgvector, "PostgreSQL pgvector", "Postgres + pgvector", "rag.doc_chunks vectors, model_name, and metadata.")
+    ContainerDb(graph_json, "Graphify graph.json", "JSON artifact", "Graph nodes, edges, confidence, and source metadata.")
+}
+
+Rel(user, demo_ui, "Uses", "Browser")
+Rel(demo_ui, api, "Calls", "HTTP")
+
+Rel(operator, coco_flow, "Reindex", "CLI")
+Rel(operator, graphify, "Build graph", "CLI")
+Rel(operator, api, "Checks /health", "HTTP")
+
+Rel(coco_flow, corpus, "Reads")
+Rel(coco_flow, pgvector, "Writes vectors")
+Rel(graphify, corpus, "Reads")
+Rel(graphify, graph_json, "Writes graph")
+
+Rel(api, pgvector, "Searches")
+Rel(api, graph_json, "Expands graph")
+Rel(api, openai, "Embeds + answers", "HTTPS")
+
+@enduml

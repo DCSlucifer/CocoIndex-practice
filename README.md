@@ -41,7 +41,38 @@ Kết quả long PDF check gần nhất trong `reports/long_pdf_retrieval_check.
 
 ## Kiến trúc
 
-![Reindexable Hybrid RAG Overall Architecture](docs/architecture-overall.png)
+Diagram kiến trúc được vẽ theo C4 model bằng `plantuml-stdlib/C4-PlantUML`, dựa trên cấu trúc source hiện tại trong `src/`, `scripts/`, `.env.example`, corpus và runtime artifacts.
+Không dùng ảnh kiến trúc cũ làm nguồn suy luận.
+
+### C4 Level 2 - Container
+
+![Reindexable Hybrid RAG C4 Container Diagram](docs/architecture-c4-container.png)
+
+Nguồn PlantUML: [`docs/architecture-c4-container.puml`](docs/architecture-c4-container.puml)
+và bản SVG: [`docs/architecture-c4-container.svg`](docs/architecture-c4-container.svg).
+
+### C4 Level 3 - Component: FastAPI Retrieval API
+
+![FastAPI Retrieval API C4 Component Diagram](docs/architecture-c4-component-api.png)
+
+Nguồn PlantUML: [`docs/architecture-c4-component-api.puml`](docs/architecture-c4-component-api.puml)
+và bản SVG: [`docs/architecture-c4-component-api.svg`](docs/architecture-c4-component-api.svg).
+
+> README tập trung Level 2 (Container) và Level 3 (Component); bỏ Level 1 (Context) và Level 4 (Code).
+> Đường nối dùng `skinparam linetype ortho` để vuông góc, không cong/ngoằn ngoèo.
+
+#### Render lại
+
+Cần `plantuml.jar` + Java (Graphviz `dot` đã được PlantUML đóng gói sẵn):
+
+```powershell
+# render PNG rồi SVG cho cả 3 .puml
+java -jar plantuml.jar -tpng docs/architecture-c4-*.puml
+java -jar plantuml.jar -tsvg docs/architecture-c4-*.puml
+```
+
+Lưu ý: PlantUML đặt tên output theo tên sau `@startuml` (vd `Reindexable_Hybrid_RAG_C4_Container.png`),
+không theo tên file `.puml`, nên cần đổi tên lại về `architecture-c4-*.{png,svg}` cho khớp các link ở trên.
 
 Thiết kế chọn **Strategy B: hai pipeline song song**:
 

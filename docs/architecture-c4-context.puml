@@ -1,0 +1,33 @@
+@startuml Reindexable_Hybrid_RAG_C4_Context
+!NEW_C4_STYLE=1
+' C4-PlantUML from plantuml-stdlib.
+' The official raw include also works:
+' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include <C4/C4_Context>
+
+LAYOUT_LEFT_RIGHT()
+LAYOUT_WITH_LEGEND()
+' Orthogonal connectors: right-angle, no wavy splines.
+skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 160
+
+title Reindexable Hybrid RAG - C4 System Context
+
+Person(user, "Demo User", "Asks questions and reviews grounded answers.")
+Person(dev, "Developer / Operator", "Runs indexing, graph build, API, and reindex commands.")
+
+System(rag, "Reindexable Hybrid RAG POC", "Indexes local documents, combines vector and graph evidence, and returns cited answers.")
+
+System_Ext(openai, "OpenAI APIs", "Embeddings and chat completions.")
+System_Ext(pg, "PostgreSQL + pgvector", "Stores and searches vector chunks.")
+System_Ext(files, "Local Workspace Files", "Corpus, graph artifacts, CocoIndex state, static UI, and reports.")
+
+Rel_R(user, rag, "Asks questions", "HTTP")
+Rel_D(dev, rag, "Operates", "PowerShell / Python")
+
+Rel_R(rag, openai, "Uses", "HTTPS")
+Rel_R(rag, pg, "Stores/searches chunks")
+Rel_R(rag, files, "Reads/writes files")
+
+@enduml
